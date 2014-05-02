@@ -79,6 +79,20 @@ class xFrameworkPX_View extends xFrameworkPX_Util_Observable
      */
     protected static $_instance = null;
 
+    /**
+     * セットテンプレート名
+     *
+     * @var string
+     */
+    protected $_setname = null;
+
+    /**
+     * セットパス名
+     *
+     * @var string
+     */
+    protected $_setpath = null;
+
     // }}}
     // {{{ getInstance
 
@@ -198,7 +212,8 @@ class xFrameworkPX_View extends xFrameworkPX_Util_Observable
 
             $this->_scripts = array(
                 'extjs/adapter/ext/ext-base.js',
-                'extjs/ext-all-debug.js',
+                //'extjs/ext-all-debug.js',
+                'extjs/ext-all.js',
                 //'extjs/src/locale/ext-lang-ja.js',
 
                 // xFrameworkPX Debug Tools
@@ -206,20 +221,18 @@ class xFrameworkPX_View extends xFrameworkPX_Util_Observable
                 'xFrameworkPX/debug/extdirect.html?wd=xFrameworkPX/debug&rp=xFrameworkPX/debug/',
 
                 // xFrameworkPX Studio
-//                'xFrameworkPX/studio/pxstudio.js?nocache=' . time(),
+                'xFrameworkPX/studio/pxstudio.js?nocache=' . time(),
 
-                'xFrameworkPX/studio/src/app/Console.js?nocache=' . time(),
-                'xFrameworkPX/studio/src/app/Namespace.js?nocache=' . time(),
-                'xFrameworkPX/studio/src/app/App.js?nocache=' . time(),
-                'xFrameworkPX/studio/src/ux/Ext.extender.js?nocache=' . time(),
-                'xFrameworkPX/studio/src/ux/Phantom.js?nocache=' . time(),
-                'xFrameworkPX/studio/src/widgets/Viewport.js?nocache=' . time(),
-                'xFrameworkPX/studio/src/widgets/NavigationPanel.js?nocache=' . time(),
-                'xFrameworkPX/studio/src/widgets/tree/FileTreePanel.js?nocache=' . time(),
-                'xFrameworkPX/studio/src/widgets/tree/VirtualScreenTreePanel.js?nocache=' . time(),
-                'xFrameworkPX/studio/src/widgets/VirtualScreenWindow.js?nocache=' . time(),
-
-
+                //'xFrameworkPX/studio/src/app/Console.js?nocache=' . time(),
+                //'xFrameworkPX/studio/src/app/Namespace.js?nocache=' . time(),
+                //'xFrameworkPX/studio/src/app/App.js?nocache=' . time(),
+                //'xFrameworkPX/studio/src/ux/Ext.extender.js?nocache=' . time(),
+                //'xFrameworkPX/studio/src/ux/Phantom.js?nocache=' . time(),
+                //'xFrameworkPX/studio/src/widgets/Viewport.js?nocache=' . time(),
+                //'xFrameworkPX/studio/src/widgets/NavigationPanel.js?nocache=' . time(),
+                //'xFrameworkPX/studio/src/widgets/tree/FileTreePanel.js?nocache=' . time(),
+                //'xFrameworkPX/studio/src/widgets/tree/VirtualScreenTreePanel.js?nocache=' . time(),
+                //'xFrameworkPX/studio/src/widgets/VirtualScreenWindow.js?nocache=' . time(),
 
                 'xFrameworkPX/studio/extdirect.html?wd=xFrameworkPX/studio&rp=xFrameworkPX/studio/',
 
@@ -299,6 +312,30 @@ class xFrameworkPX_View extends xFrameworkPX_Util_Observable
         }
 
         return null;
+    }
+
+    // }}}
+    // {{{ setTemplate
+
+    /**
+     * セットテンプレート
+     *
+     * @param string $name View変数名
+     * @param mixed $xValue 値
+     * @return void
+     */
+    public function setTemplate($name)
+    {
+
+        $name = normalize_path($name);
+
+        $tmp = explode(DS, $name);
+        $name = array_pop($tmp);
+        $path = implode(DS, $tmp);
+
+        // テンプレートファイル名設定
+        $this->_setpath = $path;
+        $this->_setname = $name;
     }
 
     // }}}

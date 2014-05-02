@@ -158,7 +158,11 @@ class xFrameworkPX_View_Smarty extends xFrameworkPX_View
      */
     private function _checkUA($regex)
     {
-        return preg_match($regex, $_SERVER['HTTP_USER_AGENT']);
+        $ua = '';
+        if (isset($_SERVER['HTTP_USER_AGENT'])) {
+            $ua = $_SERVER['HTTP_USER_AGENT'];
+        }
+        return preg_match($regex, $ua);
     }
 
     // }}}
@@ -258,7 +262,6 @@ class xFrameworkPX_View_Smarty extends xFrameworkPX_View
         $this->smarty->assign('isIE', $isIE);
         $this->smarty->assign('isIE7', $isIE7);
         $this->smarty->assign('isIE8', $isIE8);
-        $this->smarty->assign('isIE9', $isIE9);
         $this->smarty->assign('isIE6', $isIE6);
         $this->smarty->assign('isGecko', $isGecko);
         $this->smarty->assign('isGecko2', $isGecko2);
@@ -281,7 +284,6 @@ class xFrameworkPX_View_Smarty extends xFrameworkPX_View
         xFrameworkPX_Debug::getInstance()->addUserData('isIE6', $isIE6);
         xFrameworkPX_Debug::getInstance()->addUserData('isIE7', $isIE7);
         xFrameworkPX_Debug::getInstance()->addUserData('isIE8', $isIE8);
-        xFrameworkPX_Debug::getInstance()->addUserData('isIE9', $isIE9);
         xFrameworkPX_Debug::getInstance()->addUserData('isGecko', $isGecko);
         xFrameworkPX_Debug::getInstance()->addUserData('isGecko2', $isGecko2);
         xFrameworkPX_Debug::getInstance()->addUserData('isGecko3', $isGecko3);
@@ -321,19 +323,32 @@ class xFrameworkPX_View_Smarty extends xFrameworkPX_View
             'keywords' => (string)$site->site->keywords,
         ));
 
-        // テンプレート出力
-        if (
-            file_exists(
-                implode(
-                    DS,
-                    array(
-                        '.',
-                        $this->_conf->path,
-                        $this->_templatefile
-                    )
-                )
+        // {{{ 2011/9/29 setTemplateで設定されているファイルがあれば、そちらを読み込む？
+
+        $template = implode(
+            '/',
+            array(
+                $this->_conf->path,
+                $this->_templatefile
             )
-        ) {
+        );
+
+        if (is_string($this->_setname)) {
+            if ($this->_setpath && is_string($this->_setpath)) {
+                $template = $this->_setpath.DS;
+            } else {
+                $template = $this->_conf->path.DS;
+            }
+            $template .= $this->_setname;
+        }
+
+        $template = normalize_path($template);
+
+        // }}}
+
+        // テンプレート出力
+        if (file_exists($template)) {
+
             if ($this->_pxconf['DEBUG'] >= 2) {
 
                 // データ文字列設定
@@ -371,16 +386,7 @@ class xFrameworkPX_View_Smarty extends xFrameworkPX_View
                     $data
                 );
 
-                $display = $this->smarty->fetch(
-                    implode(
-                        DS,
-                        array(
-                            '.',
-                            $this->_conf->cp,
-                            $this->_templatefile
-                        )
-                    )
-                );
+                $display = $this->smarty->fetch($template);
 
                 $disable = false;
                 $doc = new DOMDocument();
@@ -408,16 +414,7 @@ class xFrameworkPX_View_Smarty extends xFrameworkPX_View
                 }
 
             } else {
-                $this->smarty->display(
-                    implode(
-                        DS,
-                        array(
-                            '.',
-                            $this->_conf->cp,
-                            $this->_templatefile
-                        )
-                    )
-                );
+                $this->smarty->display($template);
             }
         }
     }

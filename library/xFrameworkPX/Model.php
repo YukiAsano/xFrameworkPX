@@ -256,7 +256,7 @@ abstract class xFrameworkPX_Model extends xFrameworkPX_Util_Observable
      *
      * @param SimpleXMLElement $conf 設定オブジェクト
      */
-    public function connection($settings = null)
+    public function connection($settings = null, $force = false)
     {
 
         // コネクション設定オブジェクト生成
@@ -357,30 +357,79 @@ abstract class xFrameworkPX_Model extends xFrameworkPX_Util_Observable
 
             $this->adapter = new $clsName();
 
-            // PDOオブジェクト生成
-            $this->pdo = @new PDO(
+            // PDOオブジェクト取得
+            if ($force) {
 
-                // DSN設定
-                $this->getDSN(
-                    strtolower($this->conn->{$this->conf->conn}->driver),
-                    $this->conn->{$this->conf->conn}->host,
-                    $this->conn->{$this->conf->conn}->port,
-                    $this->conn->{$this->conf->conn}->database,
-                    $this->conn->{$this->conf->conn}->socket,
-                    $this->conn->{$this->conf->conn}->charset
-                ),
+                // {{{ 強制で新たにPDOオブジェクトを生成する
 
-                // ユーザー設定
-                $this->conn->{$this->conf->conn}->user,
+                // PDOオブジェクト生成
+                $this->pdo = @new PDO(
 
-                // パスワード設定
-                $this->conn->{$this->conf->conn}->password
-            );
-            $this->pdo->setAttribute(
-                PDO::ATTR_ERRMODE,
-                PDO::ERRMODE_EXCEPTION
-            );
+                    // DSN設定
+                    $this->getDSN(
+                        strtolower($this->conn->{$this->conf->conn}->driver),
+                        $this->conn->{$this->conf->conn}->host,
+                        $this->conn->{$this->conf->conn}->port,
+                        $this->conn->{$this->conf->conn}->database,
+                        $this->conn->{$this->conf->conn}->socket,
+                        $this->conn->{$this->conf->conn}->charset
+                    ),
 
+                    // ユーザー設定
+                    $this->conn->{$this->conf->conn}->user,
+
+                    // パスワード設定
+                    $this->conn->{$this->conf->conn}->password
+                );
+
+                $this->pdo->setAttribute(
+                    PDO::ATTR_ERRMODE,
+                    PDO::ERRMODE_EXCEPTION
+                );
+
+                xFrameworkPX_Db::getInstance()->setConn($this->conf->conn, $this->pdo);
+
+                // }}}
+
+            } else {
+
+                if (xFrameworkPX_Db::getInstance()->getConn($this->conf->conn)) {
+
+                    // 同じものがあれば取得する
+                    $this->pdo = xFrameworkPX_Db::getInstance()->getConn($this->conf->conn);
+
+                } else {
+
+                    // PDOオブジェクト生成
+                    $this->pdo = @new PDO(
+
+                        // DSN設定
+                        $this->getDSN(
+                            strtolower($this->conn->{$this->conf->conn}->driver),
+                            $this->conn->{$this->conf->conn}->host,
+                            $this->conn->{$this->conf->conn}->port,
+                            $this->conn->{$this->conf->conn}->database,
+                            $this->conn->{$this->conf->conn}->socket,
+                            $this->conn->{$this->conf->conn}->charset
+                        ),
+
+                        // ユーザー設定
+                        $this->conn->{$this->conf->conn}->user,
+
+                        // パスワード設定
+                        $this->conn->{$this->conf->conn}->password
+                    );
+
+                    $this->pdo->setAttribute(
+                        PDO::ATTR_ERRMODE,
+                        PDO::ERRMODE_EXCEPTION
+                    );
+
+                    xFrameworkPX_Db::getInstance()->setConn($this->conf->conn, $this->pdo);
+
+                }
+
+            }
             switch (strtolower($this->conn->{$this->conf->conn}->driver)) {
 
                 case 'mysql':
@@ -598,10 +647,22 @@ abstract class xFrameworkPX_Model extends xFrameworkPX_Util_Observable
      */
     public function isValid($data)
     {
+        // {{{ デザインチーム用_入力チェックを強制的に回避する。2012/02/09_安永
+
+        if (
+            $this->conf['px']['DEBUG'] >= 99 && 
+            xFrameworkPX_Environment::getInstance()->isDev()
+        ) {
+            return $this->mix();
+        }
+
+        // }}}
 
         // チェック対象データをプロパティに保存
         $this->validData = $data;
-
+        if (is_array($data)) {
+            $data = $this->mix($data);
+        }
         return $this->validation($this->mix(
             array(
                 $this->toString() => $data

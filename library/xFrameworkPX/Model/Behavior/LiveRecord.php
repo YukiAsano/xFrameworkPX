@@ -37,6 +37,9 @@ extends xFrameworkPX_Model_Behavior
     // バインド変数名用カウンター
     private $_bindCnt = 0;
 
+    // 実行クエリ
+    private $_execQuery = null;
+
     // }}}
     // {{{ getBindKey
 
@@ -131,10 +134,16 @@ extends xFrameworkPX_Model_Behavior
                 );
             }
 
-            file_put_contents(
-                $schemaFile,
-                xFrameworkPX_Util_Serializer::serialize($result)
-            );
+            // {{{ バッチ経由では実行しない
+
+            if ($_SERVER['SCRIPT_FILENAME'] != 'px.php') {
+                file_put_contents(
+                    $schemaFile,
+                    xFrameworkPX_Util_Serializer::serialize($result)
+                );
+            }
+
+            // }}}
 
         } else {
 
@@ -226,12 +235,21 @@ extends xFrameworkPX_Model_Behavior
                     PDO::MYSQL_ATTR_USE_BUFFERED_QUERY,
                     true
                 );
+                xFrameworkPX_Db::getInstance()->setConn(
+                    $this->module->conf->conn, $this->pdo
+                );
             }
 
             // デバッグ用計測開始
             if ($this->module->conf['px']['DEBUG'] >= 2) {
                 $startTime = microtime(true);
             }
+
+            // {{{ 2011/9/22 追加
+
+            $this->bindSetQuery($query);
+
+            // }}}
 
             // クエリ実行
             $ret = $this->pdo->exec($query);
@@ -277,6 +295,9 @@ extends xFrameworkPX_Model_Behavior
                 $this->pdo->setAttribute(
                     PDO::MYSQL_ATTR_USE_BUFFERED_QUERY,
                     true
+                );
+                xFrameworkPX_Db::getInstance()->setConn(
+                    $this->module->conf->conn, $this->pdo
                 );
             }
 
@@ -331,6 +352,12 @@ extends xFrameworkPX_Model_Behavior
         if ($onlyQuery === true) {
             $ret = $query;
         } else {
+
+            // {{{ 2011/9/22 追加
+
+            $this->bindSetQuery($query, $binds);
+
+            // }}}
 
             // PDOStatement取得
             $stmt = @$this->pdo->prepare($query);
@@ -658,6 +685,11 @@ extends xFrameworkPX_Model_Behavior
         $query = $this->module->adapter->getQueryLastId(
             $this->module->usetable, $this->module->primaryKey
         );
+        // {{{ 2011/9/22 追加
+
+        $this->bindSetQuery($query);
+
+        // }}}
         $stmt = @$this->pdo->prepare($query);
 
         // デバッグ用計測開始
@@ -807,6 +839,12 @@ extends xFrameworkPX_Model_Behavior
         if ($onlyQuery === true) {
             return $query;
         }
+
+        // {{{ 2011/9/22 追加
+
+        $this->bindSetQuery($query, $binds);
+
+        // }}}
 
         // PDOStatement取得
         $stmt = @$this->pdo->prepare($query);
@@ -981,8 +1019,14 @@ extends xFrameworkPX_Model_Behavior
             );
         }
 
+        // {{{ 2011/9/22 追加
+
+        $this->bindSetQuery($query, $binds);
+
+        // }}}
+
         if ($onlyQuery === true) {
-            return query;
+            return $query;
         } else {
 
             // 最終実行クエリ設定
@@ -1098,8 +1142,10 @@ extends xFrameworkPX_Model_Behavior
         // SELECT句にAS句追加
         if (is_string($selectClause)) {
 
-            if (!preg_match('/(AS|as) CNT$/', $selectClause)) {
-                $selectClause .= 'AS "cnt"';
+            if (str_replace(' ', '', $selectClause) === '*') {
+                $selectClause = 'COUNT(*) AS "cnt"';
+            } else if (!preg_match('/(AS|as) CNT$/', $selectClause)) {
+                $selectClause .= ' AS "cnt"';
             }
 
         } else {
@@ -3154,6 +3200,39 @@ extends xFrameworkPX_Model_Behavior
                 }
             }
         }
+
+    }
+
+    // }}}
+
+    // {{{
+
+    public function bindSetQuery ($query, $binds = null)
+    {
+
+        $traceQuery = $query;
+        if (is_array($binds)) {
+            krsort($binds);
+            foreach ($binds as $key => $value) {
+                if (!is_numeric($value)) {
+                    $value = "'" . $value . "'";
+                } else {
+                    $value = $value;
+                }
+
+                if (!startsWith($key, ':')) {
+                    $key = ':' . $key;
+                }
+
+                $traceQuery = str_replace(
+                    $key,
+                    $value,
+                    $traceQuery
+                );
+            }
+        }
+
+        xFrameworkPX_Db::getInstance()->setQuery($traceQuery);
 
     }
 

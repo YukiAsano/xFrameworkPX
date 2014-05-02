@@ -543,12 +543,19 @@ Ext.Phantom = function(){
             // CSSファイル無効化
             Ext.select('link', true).each(function(item){
 
-                var dom = item.dom;
-                if (dom.href.toLowerCase().endsWith('.css')) {
+                var dom = item.dom,
+                    href = dom.href;
+
+                if (href.indexOf('?') != 1) {
+                    // Cache対策CSSもよけられるように
+                    href = href.split('?')[0];
+                }
+
+                if (href.toLowerCase().endsWith('.css')) {
 
                     Ext.each(ignoreCss, function(ignore){
 
-                        if(!dom.href.endsWith(ignore)) {
+                        if(!href.endsWith(ignore)) {
                             link[id].push({
                                 id: dom.id,
                                 href: dom.href

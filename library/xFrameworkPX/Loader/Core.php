@@ -76,9 +76,10 @@ class xFrameworkPX_Loader_Core
 
                 // コアクラス読み込み
                 include 'xFrameworkPX/message.php';
-                include 'xFrameworkPX/extender.php';
+                include_once 'xFrameworkPX/extender.php';
                 include 'xFrameworkPX/Object.php';
                 include 'xFrameworkPX/Exception.php';
+                include_once 'xFrameworkPX/Environment.php';
                 include 'xFrameworkPX/Util/Exception.php';
                 include 'xFrameworkPX/Util/Format.php';
                 include 'xFrameworkPX/Util/MixedCollection.php';
@@ -112,9 +113,13 @@ class xFrameworkPX_Loader_Core
                 include 'xFrameworkPX/Controller/Component/WiseTag.php';
                 include 'xFrameworkPX/Dispatcher.php';
                 include 'xFrameworkPX/Debug.php';
+                include 'xFrameworkPX/Db.php';
+                include 'xFrameworkPX/Event.php';
                 include 'xFrameworkPX/Log.php';
                 include 'xFrameworkPX/Log/LogBase.php';
+                include 'xFrameworkPX/Log/SysLog.php';
                 include 'xFrameworkPX/Mail.php';
+                include_once 'xFrameworkPX/Master.php';
                 include 'xFrameworkPX/Mime.php';
                 include 'xFrameworkPX/Mobile.php';
                 include 'xFrameworkPX/Model.php';
@@ -132,7 +137,7 @@ class xFrameworkPX_Loader_Core
                 include 'xFrameworkPX/View/Exception.php';
                 include 'xFrameworkPX/View/Smarty.php';
                 include 'xFrameworkPX/Wiki.php';
-                include 'xFrameworkPX/Yaml.php';
+                include_once 'xFrameworkPX/Yaml.php';
                 include 'xFrameworkPX/Loader/Auto.php';
 
                 // 自動読み込みクラス設定

@@ -459,6 +459,9 @@ class xFrameworkPX_Yaml
             // YAML値がハッシュ (キーのみ)
 
             $key = $this->_unquote(trim(substr($line, 0, -1)));
+            if ($key === '0') {
+                $key = '__!YAMLZero';
+            }
             $ret[ $key ] = '';
         } else {
 
@@ -745,7 +748,10 @@ class xFrameworkPX_Yaml
                         // 整数以外
                         if ($value === '0') {
                             $ret = 0;
-                        } else if (trim($value, 0) == (float)$value) {
+                        } else if (
+                            trim($value, 0) == (float)$value &&
+                            !startsWith($value, '0')
+                        ) {
                             $ret = (float)$value;
                         } else {
                             $ret = $value;

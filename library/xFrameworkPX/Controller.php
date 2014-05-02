@@ -208,6 +208,21 @@ abstract class xFrameworkPX_Controller extends xFrameworkPX_Util_Observable
     }
 
     // }}}
+    // {{{ setTemplate
+
+    /**
+     * セットテンプレート
+     *
+     * @param string $name View変数名
+     * @param mixed $xValue 値
+     * @return void
+     */
+    public function setTemplate($name)
+    {
+        xFrameworkPX_View::getInstance()->setTemplate($name);
+    }
+
+    // }}}
     // {{{ __construct
 
     /**
@@ -312,7 +327,7 @@ abstract class xFrameworkPX_Controller extends xFrameworkPX_Util_Observable
             }
 
             // コンポーネントオブジェクト生成
-            $cls = new $clsName($args);
+            $cls = new $clsName($args, $this);
 
             //  コンポーネントアクセスオブジェクト設定
             $this->{$bind} = $cls;

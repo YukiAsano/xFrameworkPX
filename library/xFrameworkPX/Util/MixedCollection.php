@@ -284,6 +284,33 @@ class xFrameworkPX_Util_MixedCollection extends ArrayObject
     }
 
     // }}}
+    // {{{ toArray
+
+    /**
+     * 配列として返却
+     */
+    public function toArray()
+    {
+        return $this->_forceArray($this->getArrayCopy());
+    }
+
+    // }}}
+    // {{{ _forceArray
+
+    /**
+     * 再帰的に配列に変換
+     */
+    private function _forceArray($obj)
+    {
+        $arr = is_object($obj) ? get_object_vars($obj) : $obj;
+        foreach ($arr as $key => $val) {
+            $val = (is_array($val) || is_object($val)) ? $this->_forceArray($val) : $val;
+            $arr[$key] = $val;
+        }
+        return $arr;
+    }
+
+    // }}}
 
 }
 

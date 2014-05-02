@@ -180,7 +180,7 @@ class xFrameworkPX_Object
             $path = $_GET[$this->_cp];
         }
 
-        return array_pop(explode('/', $path));
+        return @array_pop(explode('/', $path));
     }
 
     // }}}
@@ -207,7 +207,7 @@ class xFrameworkPX_Object
             }
 
             // アクション名生成
-            $ret = get_filename(end(explode('/', $path)));
+            $ret = get_filename(end(@explode('/', $path)));
             if ($ret === '') {
                 $ret = $this->_defaultaction;
             }
@@ -373,6 +373,7 @@ class xFrameworkPX_Object
 
             // PHPExcel
             case preg_match('/PHPExcel/i', $path):
+            case preg_match('/log4php/i', $path):
                 $loader = spl_autoload_functions();
 
                 // autoload初期化

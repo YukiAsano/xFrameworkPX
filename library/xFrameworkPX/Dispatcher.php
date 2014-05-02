@@ -98,6 +98,9 @@ class xFrameworkPX_Dispatcher extends xFrameworkPX_Object
             // モジュールディレクトリパス
             'MODULE_DIR' => '../modules',
 
+            // コンバートクラス設置ディレクトリパス
+            'CONVERT_DIR' => '../converts',
+
             // テンプレートディレクトリパス
             'TEMPLATE_DIR' => '../templates',
 
@@ -329,12 +332,36 @@ class xFrameworkPX_Dispatcher extends xFrameworkPX_Object
         }
 
         // 仮想スクリーン
-        if (PHP_SAPI !== 'cli') {
+        if (!$this->isVirtualScreen() && $this->_conf['FORCE_CONTROLLER_EXECUTE'] === false) {
 
-            if (
-                !$this->isVirtualScreen() && 
-                $this->_conf['FORCE_CONTROLLER_EXECUTE'] === false
-            ) {
+            if (PHP_SAPI === 'cli') {
+
+                $controllername = implode(
+                    '',
+                    array(
+                        $this->_conf['CONTROLLER_PREFIX'],
+                        $this->getActionName(),
+                        $this->_conf['CONTROLLER_EXTENSION']
+                    )
+                );
+
+                $controllerpath = normalize_path(
+                    implode(
+                        DS,
+                        array(
+                            $this->_conf['WEBROOT_DIR'],
+                            $this->getContentPath()
+                        )
+                    )
+                );
+
+                printf(
+                    '%1$s Controller was not found in %2$s',
+                    $this->getActionName(),
+                    $controllerpath.$controllername
+                );
+
+            } else {
 
                 // パスの末尾が/でない場合で404エラーになる場合は、/を付加してリダイレクト
                 if (
@@ -361,50 +388,9 @@ class xFrameworkPX_Dispatcher extends xFrameworkPX_Object
                         $this->_conf['ERROR404']
                     )
                 );
-
-                return false;
             }
 
-        } else {
-            // パラメータ取得
-            $params = $this->getParams()->args;
-            if (!isset($params->app) || !$params->app) {
-                throw new xFrameworkPX_Controller_Exception(PX_ERR10005);
-            }
-
-            // パス解析
-            $clipath = normalize_path($this->_conf['CONTROLLER_DIR']);
-            $filename = implode(
-                array(
-                    dirname(
-                       str_replace('_', '/', $params->app)
-                    ),
-                    DS,
-                    $this->_conf['CONTROLLER_PREFIX'],
-                    get_filename(
-                        str_replace('_', '/', $params->app)
-                    ),
-                    $this->_conf['CONTROLLER_EXTENSION']
-                )
-            );
-
-            // 読み込みクラスファイル名取得
-            $includefilename = normalize_path(
-                implode(
-                    DS,
-                    array($clipath, $filename)
-                )
-            );
-
-            if (!file_exists($includefilename)) {
-                throw new xFrameworkPX_Controller_Exception(
-                    sprintf(
-                        PX_ERR10006,
-                        $includefilename
-                    )
-                );
-            }
-
+            return false;
         }
 
         // ログファイル設定読み込み
@@ -418,6 +404,14 @@ class xFrameworkPX_Dispatcher extends xFrameworkPX_Object
                 )
             )
         );
+
+        // {{{ 本番環境だった場合ログレベルを強制的にFATALにする
+
+        if (xFrameworkPX_Environment::getInstance()->isReal()) {
+            $logconf->logger->loglevel = 'FATAL';
+        }
+
+        // }}}
 
         // データベース設定読み込み
         $dbconf = xFrameworkPX_Config_Database::getInstance()->import(
@@ -444,9 +438,53 @@ class xFrameworkPX_Dispatcher extends xFrameworkPX_Object
                 )
             )->invoke();
         } catch (xFrameworkPX_Exception $e) {
+
+            // {{{ PDOExceptionでクエリがあれば取得
+
+            if ($e->getPrevClass() == 'PDOException') {
+
+                $query = xFrameworkPX_Db::getInstance()->getQuery();
+                if ($query) {
+                    $msg = $e->getMessage();
+                    $msg .= "\n実行クエリ\n";
+                    $msg .= $query;
+                    $msg .= "\n\n";
+                    xFrameworkPX_Log::getInstance()->fatal($msg);
+                } else {
+                }
+
+            }
+
+            // Exceptionのエラーを必ずログに出力
+            $this->_catchException($e);
+
+            // }}}
+
             exit($e->printStackTrace());
         } catch (Exception $e) {
             $clsName = get_class($e);
+
+            // {{{ PDOExceptionでクエリがあれば取得
+
+            if ($clsName == 'PDOException') {
+
+                $query = xFrameworkPX_Db::getInstance()->getQuery();
+
+                if ($query) {
+                    $msg = $e->getMessage();
+                    $msg .= "\n実行クエリ\n";
+                    $msg .= $query;
+                    $msg .= "\n\n";
+                    xFrameworkPX_Log::getInstance()->fatal($msg);
+                }
+
+            }
+
+            // Exceptionのエラーを必ずログに出力
+            $this->_catchException($e);
+
+            // }}}
+
             $e = new xFrameworkPX_Exception($e->getMessage());
             exit($e->printStackTrace($clsName));
         }
@@ -1224,6 +1262,43 @@ class xFrameworkPX_Dispatcher extends xFrameworkPX_Object
         $salt = substr($salt, 0, 2);
 
         return crypt($plainPassword, $salt);
+    }
+
+    // }}}
+    // {{{ _catchException
+
+    /**
+     * 例外の内容をログに出力します
+     *
+     * @access private
+     * @param object $e Exceptionオブジェクト
+     * @return void
+     */
+    private function _catchException($e) {
+        $message = $e->getMessage();
+        $query = xFrameworkPX_Db::getInstance()->getQuery();
+        if ($query != '') {
+            $message .= "\n".$query;
+        }
+        $message .= "\n".$e->getFile().' + '.$e->getLine();
+        foreach ($e->getTrace() as $item) {
+            $item += array(
+                'file'     => '?',
+                'line'     => '?',
+                'class'    => '',
+                'type'     => '',
+                'function' => '?',
+                'args'     => array()
+            );
+            $message .= "\n".(
+                $item['file'].
+                ' + '.$item['line'].' '.
+                $item['class'].$item['type'].
+                $item['function'].'('.
+                ')'
+            );
+        }
+        xFrameworkPX_Log::getInstance()->fatal($message);
     }
 
     // }}}

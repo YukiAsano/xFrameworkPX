@@ -31,6 +31,24 @@
 abstract class xFrameworkPX_Controller_Component
 extends xFrameworkPX_Util_Observable {
 
+    // {{{ props
+
+    protected $_controller = null;
+
+    // }}}
+    // {{{ __construct
+
+    public function __construct($params, $controller = null)
+    {
+
+        if ($controller) {
+            $this->_controller = $controller;
+        }
+
+    }
+
+    // }}}
+
 }
 
 // }}}

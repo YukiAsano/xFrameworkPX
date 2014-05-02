@@ -151,10 +151,19 @@ implements xFrameworkPX_ConfigInterface
             if (!$ret == false) {
 
                 // キャッシュ出力
-                file_forceput_contents(
-                    $cachepath,
-                    xFrameworkPX_Util_Serializer::serialize($ret)
-                );
+
+                // {{{ バッチ経由では実行しない
+
+                if ($_SERVER['SCRIPT_FILENAME'] != 'px.php') {
+
+                    file_forceput_contents(
+                        $cachepath,
+                        xFrameworkPX_Util_Serializer::serialize($ret)
+                    );
+
+                }
+
+                // }}}
 
             } else {
 

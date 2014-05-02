@@ -549,6 +549,12 @@ class xFrameworkPX_Controller_Web extends xFrameworkPX_Controller
         // スーパークラスメソッドコール
         parent::invoke();
 
+        // {{{ 2011/12/14 yasunaga アクションスタック実行
+
+        xFrameworkPX_Event::getInstance($this->_conf)->execute();
+
+        // }}}
+
         // レイアウト設定取得＆設定
         xFrameworkPX_View::getInstance()->setLayout($this->getLayout());
 

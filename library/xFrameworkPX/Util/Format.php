@@ -125,126 +125,129 @@ class xFrameworkPX_Util_Format
      */
     private function _formatSQL($targetSql)
     {
-
-        $retSql = '';
-        $startPos = 0;
-        $endPos = 0;
-        $sqlTemp = array();
-        $unionFlg = false;
-        $match = array();
-        $temp = null;
-
-        if (!is_null($targetSql) && $targetSql !== '') {
-            $targetSql = str_replace(array("\r\n", "\r"), "\n", $targetSql);
-
-            $targetSql = str_replace(
-                array("\t", "\n"),
-                ' ',
-                $targetSql
-            );
-
-            $targetSql = str_replace(';', ';><', $targetSql);
-            $sqlTemp = explode('><', $targetSql);
-
-            foreach ($sqlTemp as $sql) {
-
-                for ($i = 0; $i < strlen($sql); ++$i) {
-
-                    if (preg_match('/^[a-z]/i', substr($sql, $i)) === 1) {
-                        $sql = substr($sql, $i);
-                        break;
-                    }
-
-                }
-
-                if (preg_match('/^[a-z]/i', $sql) === 0) {
-                    continue;
-                }
-
-                switch (1) {
-                    case (preg_match('/^select/i', $sql)):
-
-                        while (true) {
-                            $retSql .= $this->_formatSelect(
-                                $sql, $startPos, $endPos
-                            );
-
-                            if (!$this->_unionFlg) {
-                                $startPos = 0;
-                                break;
-                            }
-
-                            $startPos = $endPos + 1;
-                            $this->_tab = '';
-                            $this->_parenthesis = 0;
-                            $this->_onCnt = 0;
-                        }
-
-                        break;
-
-                    case (preg_match('/^insert/i', $sql)):
-                        $retSql .= $this->_formatInsert(
-                            $sql, $startPos, $endPos
-                        );
-                        $startPos = 0;
-
-                        break;
-
-                    case (preg_match('/^update/i', $sql)):
-                        $retSql .= $this->_formatUpdate(
-                            $sql, $startPos, $endPos
-                        );
-                        $startPos = 0;
-
-                        break;
-
-                    case (preg_match('/^delete/i', $sql)):
-                        $retSql .= $this->_formatDelete(
-                            $sql, $startPos, $endPos
-                        );
-                        $startPos = 0;
-
-                        break;
-
-                    case (preg_match('/^replace/i', $sql)):
-                        $retSql .= $this->_formatReplace(
-                            $sql, $startPos, $endPos
-                        );
-                        $startPos = 0;
-
-                        break;
-
-                    default:
-                        $retSql .= '';
-                        break;
-                }
-
-                if (preg_match("/\n$/", $sql) === 0) {
-                    $retSql .= "\n";
-                }
-
-            }
-        }
-
-        while (true) {
-            $temp = $retSql;
-            $retSql = str_replace('  ', ' ', $retSql);
-            $retSql = str_replace('( ', '(', $retSql);
-            $retSql = str_replace(' )', ')', $retSql);
-            $retSql = str_replace(")\t", ') ', $retSql);
-            $retSql = str_replace(" \n", "\n", $retSql);
-            $retSql = str_replace("\t ", "\t", $retSql);
-
-            if ($temp === $retSql) {
-                break;
-            }
-
-        }
-
-        $retSql = str_replace("\t", '    ', $retSql);
-        $retSql = str_replace('@', ' ', $retSql);
-
+        require_once "sql-formatter/lib/SqlFormatter.php";
+        $retSql = SqlFormatter::format($targetSql, false);
         return $retSql;
+
+//        $retSql = '';
+//        $startPos = 0;
+//        $endPos = 0;
+//        $sqlTemp = array();
+//        $unionFlg = false;
+//        $match = array();
+//        $temp = null;
+//
+//        if (!is_null($targetSql) && $targetSql !== '') {
+//            $targetSql = str_replace(array("\r\n", "\r"), "\n", $targetSql);
+//
+//            $targetSql = str_replace(
+//                array("\t", "\n"),
+//                ' ',
+//                $targetSql
+//            );
+//
+//            $targetSql = str_replace(';', ';><', $targetSql);
+//            $sqlTemp = explode('><', $targetSql);
+//
+//            foreach ($sqlTemp as $sql) {
+//
+//                for ($i = 0; $i < strlen($sql); ++$i) {
+//
+//                    if (preg_match('/^[a-z]/i', substr($sql, $i)) === 1) {
+//                        $sql = substr($sql, $i);
+//                        break;
+//                    }
+//
+//                }
+//
+//                if (preg_match('/^[a-z]/i', $sql) === 0) {
+//                    continue;
+//                }
+//
+//                switch (1) {
+//                    case (preg_match('/^select/i', $sql)):
+//
+//                        while (true) {
+//                            $retSql .= $this->_formatSelect(
+//                                $sql, $startPos, $endPos
+//                            );
+//
+//                            if (!$this->_unionFlg) {
+//                                $startPos = 0;
+//                                break;
+//                            }
+//
+//                            $startPos = $endPos + 1;
+//                            $this->_tab = '';
+//                            $this->_parenthesis = 0;
+//                            $this->_onCnt = 0;
+//                        }
+//
+//                        break;
+//
+//                    case (preg_match('/^insert/i', $sql)):
+//                        $retSql .= $this->_formatInsert(
+//                            $sql, $startPos, $endPos
+//                        );
+//                        $startPos = 0;
+//
+//                        break;
+//
+//                    case (preg_match('/^update/i', $sql)):
+//                        $retSql .= $this->_formatUpdate(
+//                            $sql, $startPos, $endPos
+//                        );
+//                        $startPos = 0;
+//
+//                        break;
+//
+//                    case (preg_match('/^delete/i', $sql)):
+//                        $retSql .= $this->_formatDelete(
+//                            $sql, $startPos, $endPos
+//                        );
+//                        $startPos = 0;
+//
+//                        break;
+//
+//                    case (preg_match('/^replace/i', $sql)):
+//                        $retSql .= $this->_formatReplace(
+//                            $sql, $startPos, $endPos
+//                        );
+//                        $startPos = 0;
+//
+//                        break;
+//
+//                    default:
+//                        $retSql .= '';
+//                        break;
+//                }
+//
+//                if (preg_match("/\n$/", $sql) === 0) {
+//                    $retSql .= "\n";
+//                }
+//
+//            }
+//        }
+//
+//        while (true) {
+//            $temp = $retSql;
+//            $retSql = str_replace('  ', ' ', $retSql);
+//            $retSql = str_replace('( ', '(', $retSql);
+//            $retSql = str_replace(' )', ')', $retSql);
+//            $retSql = str_replace(")\t", ') ', $retSql);
+//            $retSql = str_replace(" \n", "\n", $retSql);
+//            $retSql = str_replace("\t ", "\t", $retSql);
+//
+//            if ($temp === $retSql) {
+//                break;
+//            }
+//
+//        }
+//
+//        $retSql = str_replace("\t", '    ', $retSql);
+//        $retSql = str_replace('@', ' ', $retSql);
+//
+//        return $retSql;
     }
 
     // }}}

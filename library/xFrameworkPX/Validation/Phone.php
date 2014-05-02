@@ -42,7 +42,7 @@ class xFrameworkPX_Validation_Phone
      * @return bool true:OK, false:NG
      * @access public
      */
-    public function validate($target, $opt=array('mobile' => true))
+    public function validate($target, $opt=array('mobile' => true, 'like' => false))
     {
         // 空はチェックしない
         if (empty($target)) {
@@ -58,8 +58,13 @@ class xFrameworkPX_Validation_Phone
         $regexMobile = "/^0[57-9]0-\d{4}-\d{4}$/";
 
         $ret = (preg_match($regexPhone, $target) === 1);
-        if($ret === false && $opt['mobile']) {
+        if($ret === false && isset($opt['mobile']) && $opt['mobile']) {
             $ret = (preg_match($regexMobile, $target) === 1);
+        }
+
+        // LIKE検索で数字とハイフンのみなら許可
+        if(preg_match('/^[-0-9]{1,13}$/', $target) && isset($opt['like']) && $opt['like']) {
+            return true;
         }
 
         return $ret;
