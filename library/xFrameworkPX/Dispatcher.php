@@ -310,7 +310,7 @@ class xFrameworkPX_Dispatcher extends xFrameworkPX_Object
 
         // 正規化されたURLで無い場合は、正規化してリダイレクト
         if (isset($_SERVER['REQUEST_URI'])) {
-            $url = parse_url($_SERVER['REQUEST_URI']);
+            $url = @parse_url($_SERVER['REQUEST_URI']);
             if (isset($url['path']) && $url['path'] !== normalize_path($url['path'], '/')) {
                 $query = '';
                 if (isset($url['query'])) {
@@ -407,9 +407,9 @@ class xFrameworkPX_Dispatcher extends xFrameworkPX_Object
 
         // {{{ 本番環境だった場合ログレベルを強制的にFATALにする
 
-        if (xFrameworkPX_Environment::getInstance()->isReal()) {
-            $logconf->logger->loglevel = 'FATAL';
-        }
+        //if (xFrameworkPX_Environment::getInstance()->isReal()) {
+        //    $logconf->logger->loglevel = 'FATAL';
+        //}
 
         // }}}
 
@@ -462,6 +462,7 @@ class xFrameworkPX_Dispatcher extends xFrameworkPX_Object
 
             exit($e->printStackTrace());
         } catch (Exception $e) {
+
             $clsName = get_class($e);
 
             // {{{ PDOExceptionでクエリがあれば取得

@@ -109,7 +109,7 @@ extends xFrameworkPX_CodeGenerator_Php_Generator
         // ライターオブジェクトがなければException発生
         if (is_null($this->_writer)) {
             throw new xFrameworkPX_CodeGenerator_Php_Exception(
-                'Type "' . $conf->type . '" is invalid type.'
+                'Type "' . (isset($conf->type) ? $conf->type : null) . '" is invalid type.'
             );
         }
 

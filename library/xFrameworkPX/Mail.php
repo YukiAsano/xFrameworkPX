@@ -137,6 +137,9 @@ class xFrameworkPX_Mail extends xFrameworkPX_Object
             $ret .= "Bcc: " . $this->_makeAddrList($conf->bcc) . "\n";
         }
 
+        if (isset($conf->replyTo)) {
+            $ret .= "Reply-To: " . $conf->replyTo . "\n";
+        }
         $ret .= implode(
             "",
             array(
@@ -352,6 +355,10 @@ class xFrameworkPX_Mail extends xFrameworkPX_Object
                 $header .= "Bcc: " . $this->_makeAddrList($conf->bcc) . "\n";
             }
 
+            if (isset($conf->replyTo)) {
+                $header .= "Reply-To: " . $conf->replyTo . "\n";
+            }
+
             $header .= implode(
                 "\n",
                 array(
@@ -372,6 +379,10 @@ class xFrameworkPX_Mail extends xFrameworkPX_Object
 
             if (isset($conf->bcc)) {
                 $header .= "Bcc: " . $this->_makeAddrList($conf->bcc) . "\n";
+            }
+
+            if (isset($conf->replyTo)) {
+                $header .= "Reply-To: " . $conf->replyTo . "\n";
             }
 
             $header .= implode(

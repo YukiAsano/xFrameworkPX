@@ -185,7 +185,15 @@ class xFrameworkPX_Master
      */
     public function getRoute($name)
     {
-        return $this->_datas[$this->_type][$name]['__route'];
+        $ret = null;
+        // まだ一度も呼ばれたことがない場合は呼ぶ
+        if (!isset($this->_datas[$this->_type][$name])) {
+            $this->get($name);
+        }
+        if (isset($this->_datas[$this->_type][$name]['__route'])) {
+            $ret = $this->_datas[$this->_type][$name]['__route'];
+        }
+        return $ret;
     }
 
     // }}}
@@ -216,6 +224,19 @@ class xFrameworkPX_Master
     {
         $this->_masterDir = $dir;
         return $this;
+    }
+
+    // }}}
+    // {{{ getDir
+
+    /**
+     * マスタのディレクトリを取得する
+     *
+     * @return object ディレクトリパス
+     */
+    public function getDir()
+    {
+        return $this->_masterDir;
     }
 
     // }}}
@@ -295,11 +316,35 @@ class xFrameworkPX_Master
         $data['__masterfiletimestamp'] = time();
 
         // シリアライズデータファイル生成
-        $res = file_forceput_contents(
-            $this->_getCacheFilePath($name),
-            serialize($data)
-        );
+        if ($_SERVER['SCRIPT_FILENAME'] != 'px.php') {
+            $res = file_forceput_contents(
+                $this->_getCacheFilePath($name),
+                serialize($data)
+            );
+        }
+
         return !$res ? false : true;
+    }
+
+    // }}}
+    // {{{ isYmlExists
+
+    /**
+     * マスタファイル存在チェック
+     *
+     * @param string $name マスタ名（パスを含む）
+     * @access public
+     * @return boolean true：存在する、false：存在しない
+     */
+    public function isYmlExists($name)
+    {
+        $ret = false;
+        // ファイルからデータ取得
+        $masterPath = $this->_getMasterFilePath($name);
+        if (file_exists($masterPath)) {
+            $ret = true;
+        }
+        return $ret;
     }
 
     // }}}

@@ -286,7 +286,7 @@ extends xFrameworkPX_Controller_Component_Session
     public function sessionHandlerDestroy($id)
     {
         // セッションファイル削除
-        return(@unlink($this->_savePath  . 'sess_' . $id));
+        return(@unlink($this->_savePath  . '/sess_' . $id));
     }
 
     // }}}

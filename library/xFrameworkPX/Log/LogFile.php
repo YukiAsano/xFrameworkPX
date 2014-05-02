@@ -31,6 +31,8 @@
 class xFrameworkPX_Log_LogFile extends xFrameworkPX_Log_LogBase
 {
 
+    const _apacheUser = 'apache';
+
     // {{{ execute
 
     /**
@@ -42,11 +44,39 @@ class xFrameworkPX_Log_LogFile extends xFrameworkPX_Log_LogBase
     public function execute($level, $location)
     {
         $fileName = (string)$this->_param->filename;
+        $logDirPath = (string)$this->_param->dirpath;
         $quota = $this->_param->quota;
-        $pathInfo = array();
 
         // 日付別用ファイル名生成
+        $filename = $this->_makeFileName($fileName, $quota);
+
+        // 出力先の設定
+        $outputFileName = $this->_makeOutputDir($fileName, $this->_logDir, $logDirPath);
+
+        // ローテート処理
+        $ret = $this->_logRotate($outputFileName, $quota);
+
+        // ファイル出力
+        $ret = $this->_outPutLog($level, $location, $this->_message, $outputFileName);
+
+        // ファイル所有者変更
+        $ret = $this->_fileChangeOwner($outputFileName, self::_apacheUser);
+    }
+
+    // }}}
+
+    // {{{ _makeFileName
+
+    /**
+     * ログファイル名作成メソッド
+     *
+     * @param string $fileName ファイル名
+     * @param object $quota クオータ情報
+     */
+    private function _makeFileName($fileName, $quota) {
+        // クオータ設定がなかったら処理せず戻す
         if ($quota->date == 'true' || $quota->date == 'yes') {
+            $pathInfo = array();
 
             $pathInfo = pathinfo($fileName);
 
@@ -63,12 +93,59 @@ class xFrameworkPX_Log_LogFile extends xFrameworkPX_Log_LogBase
             } else {
                 $fileName = $pathInfo['filename'] . $formatDate;
             }
-
         }
 
-        $outputFileName = normalize_path($this->_logDir . DS . $fileName);
+        return $fileName;
+    }
 
-        // ローテート処理
+    // }}}
+
+    // {{{ _makeOutputDir
+
+    /**
+     * ログディレクトリ設定メソッド
+     *
+     * @param string $fileName ファイル名
+     * @param string $defaultLogDirPath デフォルトファイルパス
+     * @param string $logDirPath 指定ファイルパス
+     */
+    private function _makeOutputDir($fileName, $defaultLogDirPath, $logDirPath) {
+        if ($logDirPath !== '') {
+            // 出力パスが指定されている場合
+            if (file_exists($logDirPath) && !is_dir($logDirPath)) {
+                // 指定されたパスがファイルだったらデフォルトを使用
+                $outputFileName = normalize_path($defaultLogDirPath . DS . $fileName);
+            } else {
+                // ディレクトリ作成
+                $ret = makeDirectory($logDirPath);
+                if ($ret === true) {
+                    // ディレクトリに問題がなければ指定されたパスを使用
+                    $outputFileName = normalize_path($logDirPath . DS . $fileName);
+                } else {
+                    // 作成失敗しているならデフォルトを使用
+                    $outputFileName = normalize_path($defaultLogDirPath . DS . $fileName);
+                }
+            }
+        } else {
+            // デフォルト
+            $outputFileName = normalize_path($defaultLogDirPath . DS . $fileName);
+        }
+
+        return $outputFileName;
+    }
+
+    // }}}
+
+    // {{{ _logRotate
+
+    /**
+     * ログローテーションメソッド
+     *
+     * @param string $outputFileName 出力ファイル
+     * @param object $quota クオータ情報
+     */
+    private function _logRotate($outputFileName, $quota) {
+        // クオータ設定がなかったら処理せず戻す
         if (
             (int)$quota->size > 0 &&
             @filesize($outputFileName) >= (int)$quota->size
@@ -108,7 +185,22 @@ class xFrameworkPX_Log_LogFile extends xFrameworkPX_Log_LogBase
             }
         }
 
-        // ファイル出力
+        return true;
+    }
+
+    // }}}
+
+    // {{{ _outPutLog
+
+    /**
+     * ログファイルへの出力メソッド
+     *
+     * @param int $level ログレベル
+     * @param array $location ロケーション情報
+     * @param string $message 出力文字列
+     * @param string $outputFileName 出力ファイル
+     */
+    private function _outPutLog($level, $location, $message, $outputFileName) {
         $date = getdate();
         $buffer = '';
         $buffer = $buffer . sprintf(
@@ -133,10 +225,26 @@ class xFrameworkPX_Log_LogFile extends xFrameworkPX_Log_LogBase
             $this->convertLevelString($level)
         );
         $buffer = $buffer . ' ' . $location['file'];
-        $buffer = $buffer . ' - ' . $this->_message;
+        $buffer = $buffer . ' - ' . $message;
         $buffer = $buffer . "\n";
 
-        file_forceput_contents($outputFileName, $buffer, FILE_APPEND);
+        return file_forceput_contents($outputFileName, $buffer, FILE_APPEND);
+    }
+
+    // }}}
+
+    // {{{ _outPutLog
+
+    /**
+     * ログファイルへの出力メソッド
+     *
+     * @param int $level ログレベル
+     * @param array $location ロケーション情報
+     * @param string $message 出力文字列
+     * @param string $outputFileName 出力ファイル
+     */
+    private function _fileChangeOwner($outputFileName, $user = self::_apacheUser) {
+        return file_change_owner($outputFileName, $user);
     }
 
     // }}}

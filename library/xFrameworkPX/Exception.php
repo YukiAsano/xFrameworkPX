@@ -30,6 +30,28 @@
  */
 class xFrameworkPX_Exception extends Exception
 {
+
+    // {{{ props
+
+    /**
+     * リクエストURL
+     * var string
+     */
+    private $_url = null;
+
+    /**
+     * エラーメッセージ
+     * var string
+     */
+    private $_msg = null;
+
+    /**
+     * 元のエクセプションクラス
+     * var string
+     */
+    private $_prevCls = null;
+
+    // }}}
     // {{{
 
     /**
@@ -38,8 +60,49 @@ class xFrameworkPX_Exception extends Exception
      * @param $msg エラーメッセージ
      * @return void
      */
-    public function __construct($msg)
+    public function __construct($msg, $clsname = null)
     {
+
+        // {{{ 元のエクセプションが送られていたらセット
+
+        if (is_string($clsname)) {
+            $this->_prevCls = $clsname;
+        }
+
+        // }}}
+
+        // {{{ パラメータ設定
+
+        if (xFrameworkPX_Debug::getInstance()->level != '2') {
+
+            // URL
+            $base = base_name();
+            $uri = $_SERVER['REQUEST_URI'];
+
+            // {{{ ユーザーディレクトリ対応
+
+            $userDir = '';
+            if (substr($uri,0, 2) == '/~') {
+                $userDir = substr($uri, 0, strpos($uri, '/', strlen('/~')));
+            }
+            if ($userDir) {
+                $uri = preg_replace('/'.preg_quote($userDir, '/').'/', '', $uri);
+                if (strlen($uri) > 1 && startsWith($uri, '/')) {
+                    $uri = substr($uri, 1);
+                }
+            }
+
+            // }}}
+
+            $url = $base.$uri;
+            $this->_url = $url;
+            $this->_msg = $msg;
+
+//            file_forceput_contents('../logs/Exception'.date('Ymd').'.log', date('Y/m/d H:i:s').' '.$url.' '.$msg."\n", FILE_APPEND);
+
+        }
+
+        // }}}
         // {{{ キャラセットヘッダー送信
 
         @header("Content-type: text/html; charset=" . PX_MSG_CHARSET);
@@ -124,6 +187,55 @@ EOC;
      */
     public function printStackTrace($clsName = null)
     {
+        // {{{ Zoo仕様デバッグモードが0,1のときは、専用画面を表示する
+
+        if (xFrameworkPX_Debug::getInstance()->level != '2') {
+
+            $filename = '';
+            $managerInfo = xFrameworkPX_Environment::getInstance()->get('manager');
+            $adminInfo = xFrameworkPX_Environment::getInstance()->get('admin');
+
+            if (!empty($managerInfo) && !empty($adminInfo)) {
+                // Front,Manager,Adminを判定
+                $managerBase = $managerInfo['domain'].$managerInfo['userdir'].$managerInfo['dir'];
+                $protocol = (is_secure())? 'https://' : 'http://';
+                $managerBase = $protocol.$managerBase;
+
+                $adminBase = $adminInfo['domain'].$adminInfo['userdir'].$adminInfo['dir'];
+                $protocol = (is_secure())? 'https://' : 'http://';
+                $adminInfo = $protocol.$adminInfo;
+
+                if (preg_match('/^'.preg_quote($managerBase, '/').'/', $this->_url)) {
+                    $filename = 'manager_error.html';
+                } else if (preg_match('/^'.preg_quote($adminInfo, '/').'/', $this->_url)) {
+                    $filename = 'admin_error.html';
+                } else {
+                    $filename = 'error.html';
+                }
+
+            }
+
+            if ($filename) {
+                $datas = array(
+                    'msg' => $this->_msg,
+                );
+
+                xFrameworkPX_View::getInstance()->smarty->assign(
+                    'relpath', xFrameworkPX_View::getInstance()->getRelativePath()
+                );
+                xFrameworkPX_View::getInstance()->smarty->assign(
+                    'datas', $datas
+                );
+
+                $body = xFrameworkPX_View::getInstance()->smarty->fetch(
+                    realpath('../templates/'.$filename)
+                );
+                return $body;
+            }
+
+        }
+
+        // }}}
 
 $page = <<< EOC
 <?xml version="1.0" encoding="utf-8"?>
@@ -518,6 +630,49 @@ EOC;
     }
 
     // }}}
+    // {{{ _getCategory
+
+    /**
+     * カテゴリ取得メソッド
+     *
+     * @return numeric (0:不明 1:Front 2:Manager 3:Admin)
+     */
+    private function _getCategory()
+    {
+
+        $ret = 0;
+
+        if (is_null($this->_url)) {
+            return $ret;
+        }
+
+        $base = base_name();
+
+        $uri = preg_replace('/^'.preg_quote($base, '/').'/', '', $this->_url);
+
+        $tmp = explode('/', $uri);
+
+        switch (array_shift($tmp)) {
+
+            // TODO: Managerが別ドメインになった場合、変更が必要
+            case 'manager':
+                break;
+
+            // TODO: Managerが別ドメインになった場合、変更が必要
+            case 'admin':
+                break;
+
+        }
+
+    }
+
+    // }}}
+
+    public function getPrevClass () {
+
+        return $this->_prevCls;
+
+    }
 
 }
 
