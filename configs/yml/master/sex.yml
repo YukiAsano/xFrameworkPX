@@ -1,0 +1,10 @@
+# 性別マスタ
+
+1:
+  shortName: 男
+  name: 男性
+  engName: male
+2:
+  shortName: 女
+  name: 女性
+  engName: female
