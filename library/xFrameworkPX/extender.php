@@ -546,7 +546,8 @@ function base_name($https=false)
         $serverPort = ':' . $_SERVER["SERVER_PORT"];
     }
 
-    $path = str_replace('index.php', '', $_SERVER['PHP_SELF']);
+    //$path = str_replace('index.php', '', $_SERVER['PHP_SELF']);
+    $path = str_replace('bootstrap.php', '', $_SERVER['PHP_SELF']);
 
     return $protocol . $serverName . $serverPort . $path;
 
