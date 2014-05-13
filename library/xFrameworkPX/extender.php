@@ -861,7 +861,7 @@ function getEnvVal()
  *
  * @param mixed $val 表示したい値
  * @param boolean $showHtml HTML表示する場合（dBugが無かった場合に有効）
- * @param boolean $showFrom 呼び出した場所を表示するか否か
+ * @param boolean $showFrom 呼び出した場所を表示するか否か合（dBugが無かった場合に有効）
  * @return none
  */
 function dd($val = null, $showHtml = false, $showFrom = true)

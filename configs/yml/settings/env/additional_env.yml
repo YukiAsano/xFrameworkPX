@@ -1,10 +1,10 @@
 # 追加の環境設定ファイルサンプル
 #
-# 呼び出し方はファイル名、キー名
+# 呼び出し方は次のメソッドで、引数はファイル名、キー名1、キー名2、、、
 # env.ymlの環境設定の設定値を見て値を返す
 # getEnvVal('additional_env', 'test');
 #
-# settings/env下に設置すること
+# /configs/yml/settings/envをルートとする
 #
 
 real:
