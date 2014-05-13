@@ -1,0 +1,20 @@
+# 追加の環境設定ファイルサンプル
+#
+# 呼び出し方はファイル名、キー名
+# env.ymlの環境設定の設定値を見て値を返す
+# getEnvVal('additional_env', 'test');
+#
+# settings/env下に設置すること
+#
+
+real:
+  test: 1
+
+stage:
+  test: 2
+
+test:
+  test: 3
+
+dev:
+  test: 4
