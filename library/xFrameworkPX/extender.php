@@ -791,7 +791,7 @@ function move_file(
 /**
  * デバッグ情報表示
  * settings/env.yml の debugmode がtrueの場合にのみ表示されます
- * dBug必須
+ * dBugがあればdBug使用
  *
  * @param mixed $val 表示したい値
  * @param boolean $showHtml HTML表示する場合（dBugが無かった場合に有効）
@@ -808,8 +808,8 @@ function dd($val = null, $showHtml = false, $showFrom = true)
             echo ' (line <strong>' . $calledFrom[0]['line'] . '</strong>)';
         }
 
-        if (file_exists(dirname(dirname(__FILE__)) . DS . 'dBug.php')) {
-            require_once('misc/dBug.php');
+        if (file_exists(dirname(dirname(__FILE__)) . DS . 'misc' . DS . 'dBug.php')) {
+            require_once('misc' . DS . 'dBug.php');
             new dBug($val);
         } else {
             echo "\n<pre>\n";
