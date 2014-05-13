@@ -541,7 +541,7 @@ function base_name($https=false)
 
     $serverName = $_SERVER['SERVER_NAME'];
     $serverPort = '';
-    
+
     if($_SERVER['SERVER_PORT'] != '80' && $_SERVER['SERVER_PORT'] != '443') {
         $serverPort = ':' . $_SERVER["SERVER_PORT"];
     }
@@ -783,6 +783,69 @@ function move_file(
 
     return false;
 
+}
+
+// }}}
+// {{{ dd
+
+/**
+ * デバッグ情報表示
+ * settings/env.yml の debugmode がtrueの場合にのみ表示されます
+ * dBug必須
+ *
+ * @param mixed $val 表示したい値
+ * @param boolean $showHtml HTML表示する場合（dBugが無かった場合に有効）
+ * @param boolean $showFrom 呼び出した場所を表示するか否か
+ * @return none
+ */
+function dd($val = null, $showHtml = false, $showFrom = true)
+{
+    $env = xFrameworkPX_Environment::getInstance();
+    if ($env->get('debugmode')) {
+        if ($showFrom) {
+            $calledFrom = debug_backtrace();
+            echo '<strong>' . $calledFrom[0]['file'] . '</strong>';
+            echo ' (line <strong>' . $calledFrom[0]['line'] . '</strong>)';
+        }
+
+        if (file_exists(dirname(dirname(__FILE__)) . DS . 'dBug.php')) {
+            require_once('misc/dBug.php');
+            new dBug($val);
+        } else {
+            echo "\n<pre>\n";
+            $var = print_r($var, true);
+            if ($showHtml) {
+                $var = str_replace('<', '&lt;', str_replace('>', '&gt;', $var));
+            }
+            echo $var . "\n</pre>\n";
+        }
+    }
+}
+
+// }}}
+// {{{ dt
+
+/**
+ * デバッグトレース
+ * settings/env.yml の debugmode がtrueの場合にのみ表示されます
+ *
+ * @param number $depth 表示する深さ
+ * @return none
+ */
+function dt($depth = 5)
+{
+    $env = xFrameworkPX_Environment::getInstance();
+    if ($env->get('debugmode')) {
+        $a = debug_backtrace();
+        for ($i = 1; $i <= $depth; $i++) {
+            if (!isset($a[$i])) {return;}
+            $file = (isset($a[$i]['file'])) ? $a[$i]['file'] : null;
+            $class = (isset($a[$i]['class'])) ? $a[$i]['class'] : null;
+            $function = (isset($a[$i]['function'])) ? $a[$i]['function'] : null;
+            $line = (isset($a[$i]['line'])) ? $a[$i]['line'] : null;
+            echo "{$file}:{$line} ({$class}::{$function})\n";
+        }
+    }
 }
 
 // }}}
