@@ -786,6 +786,72 @@ function move_file(
 }
 
 // }}}
+// {{{ getMaster
+
+/**
+ * ymlによるマスター取得メソッド
+ *
+ * @param $path マスターファイルパス(/configs/yml/masterをルートとする)
+ * @param 第一パラメータ：取得するマスタ名、第二以降：マスタ内で取得するキーを指定
+ * @return mixed
+ */
+function getMaster()
+{
+
+    $args = func_get_args();
+    return call_user_func_array(
+        array(xFrameworkPX_Master::getInstance('master'), 'get'),
+        $args
+    );
+
+}
+
+// }}}
+// {{{ getSetting
+
+/**
+ * ymlによるマスター取得メソッド
+ *
+ * @param $path マスターファイルパス(/configs/yml/settingsをルートとする)
+ * @param 第一パラメータ：取得するマスタ名、第二以降：マスタ内で取得するキーを指定
+ * @return mixed
+ */
+function getSetting()
+{
+
+    $args = func_get_args();
+    return call_user_func_array(
+        array(xFrameworkPX_Master::getInstance('settings'), 'get'),
+        $args
+    );
+
+}
+
+// }}}
+// {{{ getEnvVal
+
+/**
+ * 現在の環境毎に、envの値を取得するメソッド
+ *
+ * @param マスターファイルパス(/configs/yml/settings/envをルートとする)
+ * @param 第一パラメータ：取得するマスタ名、第二以降：マスタ内で取得するキーを指定
+ * @return mixed
+ */
+function getEnvVal()
+{
+
+    $args = func_get_args();
+    $file = 'env/'.array_shift($args);
+    array_unshift($args, xFrameworkPX_Environment::getInstance()->getEnvType());
+    array_unshift($args, $file);
+    return call_user_func_array(
+        array(xFrameworkPX_Master::getInstance('settings'), 'get'),
+        $args
+    );
+
+}
+
+// }}}
 // {{{ dd
 
 /**
