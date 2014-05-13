@@ -55,6 +55,7 @@ class xFrameworkPX_DebugTools extends xFrameworkPX_Model
             foreach(get_filelist($dir, array('ext' => 'pxml')) as $file) {
                 unlink($file);
             }
+            removeDirectory($dir . '/cache');
         }
 
         if ($template) {
