@@ -66,8 +66,10 @@ class validators_Duplicate extends xFrameworkPX_Model_Behavior {
      * @params $target チェック文字列
      * @params $opt
      * array(
-     *     'target' => フィールド名 // 対象DBカラム
-     *     'where'  => WHERE句       // 追加WHERE句（ステータスを見るとか。ex."AND status <> 9"）
+     *     'target' => フィールド名, // 検索対象DBカラム名
+     *     'where'  => WHERE句,      // 追加WHERE句（ステータスを見るとか。ex."AND del = 1 AND status <> :status"）
+     *     'bind'   => array()       // 追加WHERE句に反映させるbindパラメータ。キー名にパラメータ名、値にフィールド名。
+     *                               // array(':status' => 'status_field')）
      * )
      * @return boolean 重複あり:false、重複なし:false
      */
@@ -75,7 +77,7 @@ class validators_Duplicate extends xFrameworkPX_Model_Behavior {
     {
 
         // 【お約束】ローカル変数初期化
-        $data = null;
+        $datas = null;
         $pk = null;
         $query = null;
         $binds = array();
@@ -98,8 +100,7 @@ class validators_Duplicate extends xFrameworkPX_Model_Behavior {
         $pk = isset($datas[$this->primaryKey]) ? $datas[$this->primaryKey] : '';
 
         $col = $opt['target']; // チェックするカラム
-        $val = $target;           // チェックする値
-        $pk = $pk;                // プライマリキー
+        $pk = $pk;             // プライマリキー
 
         // 存在チェック
         $query  = '';
@@ -114,7 +115,9 @@ class validators_Duplicate extends xFrameworkPX_Model_Behavior {
             $binds[':'.$pkCol] = $pk;
         }
 
+        // 検索対象設定
         $query .= $col.' = :'.$col;
+        $binds[':'.$col] = $target;
 
         if (isset($opt['where'])) {
 
@@ -123,9 +126,13 @@ class validators_Duplicate extends xFrameworkPX_Model_Behavior {
             $query .= $opt['where'];
             $query .= ' ';
 
+            // バインドする値の設定
+            if (isset($opt['bind']) && is_array($opt['bind'])) {
+                foreach ($opt['bind'] as $bindName => $fieldName) {
+                    $binds[$bindName] = $datas[$fieldName];
+                }
+            }
         }
-
-        $binds[':'.$col] = $val;
 
         // 結果取得
         $ret = $this->module->row(

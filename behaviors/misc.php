@@ -567,6 +567,8 @@ class misc extends xFrameworkPX_Model_Behavior {
 
         $tmp = null;
         if (!is_null($date) && $date != '') {
+            // 区切り文字を念のため変える
+            $date = str_replace('-', '/', $date);
             $tmp = explode('/', $date);
         } else {
             return false;
