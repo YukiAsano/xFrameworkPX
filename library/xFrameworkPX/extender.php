@@ -667,57 +667,113 @@ function compress_ipv6($ip ='')
 // {{{ encrypt
 
 /**
- * Blowfish暗号化関数
+ * 暗号化メソッド
+ *
+ * @access public
+ * @params $text 暗号対象テキスト
+ * @return void
  */
 function encrypt($key, $text)
 {
-    if (empty($key)) {
-        trigger_error('An illegal key was specified.', E_USER_ERROR);
-    }
-
-    srand();
-    $ivSize = mcrypt_get_iv_size(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
-    $iv = mcrypt_create_iv($ivSize, MCRYPT_RAND);
-
-    return base64_encode(
-        $iv . mcrypt_encrypt(
-            MCRYPT_BLOWFISH,
-            $key,
-            $text,
-            MCRYPT_MODE_CBC,
-            $iv
-        )
-    );
+    $rc4 = _encrypt($key, $text);
+    $crc = pack("L", crc32($rc4));
+    return base64_encode($crc.$rc4);
 }
 
 // }}}
 // {{{ decrypt
 
 /**
- * Blowfish複合化関数
+ * 復号化メソッド
+ *
+ * @access public
+ * @params $text 暗号対象テキスト
+ * @return string
  */
-function decrypt($key, $base64)
+function decrypt($key, $text)
 {
-    if (empty($key)) {
-        trigger_error('An illegal key was specified.', E_USER_ERROR);
+    $crc_rc4 = base64_decode($text);
+    if (strlen($crc_rc4) < 4) {
+        return null;
+    }
+    $crc = unpack("L", $crc_rc4);
+    $crc = $crc[1];
+    $rc4 = substr($crc_rc4, 4);
+    if (crc32($rc4) != $crc) return null;
+
+    return _decrypt($key, $rc4);
+}
+
+// }}}
+// {{{ _encrypt
+
+/**
+ * 暗号化メソッド
+ *
+ * @param string $pwd Key to encrypt with (can be binary of hex)
+ * @param string $data Content to be encrypted
+ * @param bool $ispwdHex Key passed is in hexadecimal or not
+ * @access public
+ * @return string
+ */
+function _encrypt($pwd, $data, $ispwdHex = 0)
+{
+
+    if ($ispwdHex) {
+        $pwd = @pack('H*', $pwd);
     }
 
-    $ivEncrypt = base64_decode($base64);
+    $key = array();
+    $box = array();
 
-    $ivSize = mcrypt_get_iv_size(MCRYPT_BLOWFISH, MCRYPT_MODE_CBC);
-    $iv = substr($ivEncrypt, 0, $ivSize);
-    $encrypt = substr($ivEncrypt, $ivSize);
+    $key[]  = '';
+    $box[]  = '';
+    $cipher = '';
 
-    return rtrim(
-        mcrypt_decrypt(
-            MCRYPT_BLOWFISH,
-            $key,
-            $encrypt,
-            MCRYPT_MODE_CBC,
-            $iv
-        ),
-        "\0"
-    );
+    $pwd_length = strlen($pwd);
+    $data_length = strlen($data);
+
+    for ($i = 0; $i < 256; $i++) {
+        $key[$i] = ord($pwd[$i % $pwd_length]);
+        $box[$i] = $i;
+    }
+    for ($j = $i = 0; $i < 256; $i++) {
+        $j = ($j + $box[$i] + $key[$i]) % 256;
+        $tmp = $box[$i];
+        $box[$i] = $box[$j];
+        $box[$j] = $tmp;
+    }
+    for ($a = $j = $i = 0; $i < $data_length; $i++) {
+        $a = ($a + 1) % 256;
+        $j = ($j + $box[$a]) % 256;
+        $tmp = $box[$a];
+        $box[$a] = $box[$j];
+        $box[$j] = $tmp;
+        $k = $box[(($box[$a] + $box[$j]) % 256)];
+        $cipher .= chr(ord($data[$i]) ^ $k);
+    }
+
+    return $cipher;
+
+}
+
+// }}}
+// {{{ _decrypt
+
+/**
+ * 複合化メソッド
+ *
+ * @param string $pwd Key to decrypt with (can be binary of hex)
+ * @param string $data Content to be decrypted
+ * @param bool $ispwdHex Key passed is in hexadecimal or not
+ * @access public
+ * @return string
+ */
+function _decrypt($pwd, $data, $ispwdHex = 0)
+{
+
+    return _encrypt($pwd, $data, $ispwdHex);
+
 }
 
 // }}}
