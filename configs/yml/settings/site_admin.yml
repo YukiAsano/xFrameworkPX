@@ -1,0 +1,24 @@
+# 管理画面サイト情報設定ファイル
+
+# 共通設定
+root:
+  common_title :テストサイト - Admin System
+  common_description :
+  common_separator : |
+  common_keyword :
+
+# トップ
+index.html extends root:
+  title: トップ
+  description:
+  keyword:
+
+#############################
+# ログイン
+#############################
+
+# ログイン画面
+login/index.html extends root:
+  title: ログイン画面
+  description:
+  keyword:

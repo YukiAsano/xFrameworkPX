@@ -1,0 +1,18 @@
+# PCフロント画面サイト情報設定ファイル
+
+# 共通設定
+# 共通設定は必ず含まれる
+root:
+  common_title:テストサイト
+  common_description:これはテストサイトです
+  common_separator: |
+  common_keyword:xFrameworkPX,test,てすとん
+  option :
+    key_separate :
+    desc_separate :
+
+# トップ
+index.html extends root:
+  title:トップページ
+  description:トップです
+  keyword:キーワード
