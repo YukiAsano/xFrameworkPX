@@ -33,7 +33,7 @@ final class xFrameworkPX_Version
 
     // {{{ const
 
-    const VERSION = '3.5.3';
+    const VERSION = '3.5.5-dev';
 
     // }}}
     // {{{ compare
