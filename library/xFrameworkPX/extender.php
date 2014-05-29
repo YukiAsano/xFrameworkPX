@@ -435,9 +435,67 @@ function endsWith($check, $target)
  */
 function matchesIn($check, $target)
 {
-
     return strpos($check, $target) !== false;
+}
 
+// }}}
+// {{{ mbStartsWith
+
+/**
+ * マルチバイト前方一致確認関数
+ * $checkが$targetから始まるか判定します。
+ *
+ * @param string $check チェック文字列
+ * @param string $target 対象文字列
+ * @param string $enc テキストエンコード
+ * @return boolean true:一致:false:不一致
+ */
+function mbStartsWith($check, $target, $enc = 'UTF-8')
+{
+    return mb_strpos($check, $target, 0, $enc) === 0;
+}
+
+// }}}
+// {{{ mbEndsWith
+
+/**
+ * マルチバイト後方一致確認関数
+ * $checkが$targetで終わるか判定します。
+ *
+ * @param string $check チェック文字列
+ * @param string $target 対象文字列
+ * @param string $enc テキストエンコード
+ * @return boolean true:一致:false:不一致
+ */
+function mbEndsWith($check, $target, $enc = 'UTF-8')
+{
+    // {{{ 文字列長が足りていない場合はFALSEを返します。
+
+    $len = (mb_strlen($check, $enc) - mb_strlen($target, $enc));
+    if ($len < 0) {
+        return false;
+    }
+
+    // }}}
+
+    return mb_strpos($check, $target, $len, $enc) === 1;
+}
+
+// }}}
+// {{{ mbMatchesIn
+
+/**
+ * マルチバイト部分一致確認関数
+ * $checkの中に$targetが含まれているか判定します。
+ *
+ * @param string $check チェック文字列
+ * @param string $target 対象文字列
+ * @param string $enc テキストエンコード
+ * @return boolean true:一致:false:不一致
+ */
+function mbMatchesIn($check, $target, $enc = 'UTF-8')
+{
+    return mb_strpos($check, $target, 0, $enc) !== false;
 }
 
 // }}}
