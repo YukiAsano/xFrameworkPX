@@ -46,6 +46,7 @@ class validators_NotEmpty extends xFrameworkPX_Model_Behavior {
      * 空チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
     private function _NotEmpty ($target) {
@@ -64,7 +65,7 @@ class validators_NotEmpty extends xFrameworkPX_Model_Behavior {
      * チェックボックス用空チェック
      *
      * @access public
-     * @params $target チェック対象文字列
+     * @param array $targets チェック対象文字列配列
      * @return boolean
      */
     public function bindValidateNotEmptyMulti ($targets) {
@@ -95,8 +96,8 @@ class validators_NotEmpty extends xFrameworkPX_Model_Behavior {
      * 複数フォームの空チェック
      *
      * @access public
-     * @params $target チェック対象文字列(未使用)
-     * @params $opt オプション（array('target' => array('フィールド名'...))）
+     * @param $target チェック対象文字列(未使用)
+     * @param $opt オプション（array('target' => array('フィールド名'...))）
      * @return boolean
      */
     public function bindValidateNotEmptyMultiField ($target, $opt) {
@@ -142,8 +143,8 @@ class validators_NotEmpty extends xFrameworkPX_Model_Behavior {
     /**
      * 条件付き空チェック
      *
-     * @params $target 入力データ
-     * @params $opt nameで指定したフィールドに
+     * @param string $target 入力データ
+     * @param array $opt nameで指定したフィールドに
      *              valueで指定した値がある場合にチェックします
      * array(
      *     'name' => フィールド名
@@ -205,7 +206,7 @@ class validators_NotEmpty extends xFrameworkPX_Model_Behavior {
      * チェックボックス用空チェック
      *
      * @access public
-     * @params $target チェック対象文字列
+     * @param array $targets チェック対象文字列配列
      * @return boolean
      */
     public function bindValidateNotEmptyCondMulti ($targets) {

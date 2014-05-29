@@ -46,6 +46,7 @@ class validators_Ng extends xFrameworkPX_Model_Behavior {
      * 空チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
     private function _NotEmpty ($target) {
@@ -63,8 +64,8 @@ class validators_Ng extends xFrameworkPX_Model_Behavior {
      * NGワード存在チェック
      *
      * @access public
-     * @params string $target チェック対象文字列
-     * @params array $opt オプション
+     * @param string $target チェック対象文字列
+     * @param array $opt オプション
      * @return boolean
      */
     public function bindValidateNGWordExists($target, $opt = array()) {
@@ -103,7 +104,8 @@ class validators_Ng extends xFrameworkPX_Model_Behavior {
      * 複数用NGワード存在チェック
      *
      * @access public
-     * @params $target チェック対象文字列
+     * @param array $targets チェック対象文字列配列
+     * @param array $opt
      * @return boolean
      */
     public function bindValidateNGWordExistsMulti ($targets, $opt = array()) {

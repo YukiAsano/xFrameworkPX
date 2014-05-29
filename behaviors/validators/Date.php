@@ -50,6 +50,7 @@ class validators_Date extends xFrameworkPX_Model_Behavior {
      * 空チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
     private function _NotEmpty ($target) {
@@ -66,6 +67,7 @@ class validators_Date extends xFrameworkPX_Model_Behavior {
      * 日付チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
     private function _Date ($target) {
@@ -83,7 +85,7 @@ class validators_Date extends xFrameworkPX_Model_Behavior {
      * 複数用日付チェック
      *
      * @access public
-     * @params $target チェック対象文字列
+     * @param array $targets チェック対象文字列
      * @return boolean
      */
     public function bindValidateDateMulti ($targets) {
@@ -114,8 +116,9 @@ class validators_Date extends xFrameworkPX_Model_Behavior {
      * 日付の範囲チェック（最大値最小値を含みます）
      *
      * @access public
-     * @param $target 対象フィールド値
-     * @params $opt オプション（array('max' => '最大値', 'min' => '最小値')）
+     * @param string $target 対象フィールド値
+     * @param array $opt オプション（array('max' => '最大値', 'min' => '最小値')）
+     * @throws xFrameworkPX_Exception
      * @return boolean true:正常値,false:異常値
      */
     public function bindValidateDateRange ($target, $opt)
@@ -156,8 +159,8 @@ class validators_Date extends xFrameworkPX_Model_Behavior {
      * 日付FromToチェックメソッド
      * 日付のチェックは終わっているものとする
      *
-     * @params $target ターゲット値（使用しない）
-     * @params $opt オプション（array('from' => '開始日時', 'to' => '終了日時')）
+     * @param string $target ターゲット値（使用しない）
+     * @param array $opt オプション（array('from' => '開始日時', 'to' => '終了日時')）
      * @return boolean
      */
     public function bindValidateDateFromTo ($target, $opt = array('from' => 'from', 'to' => 'to'))

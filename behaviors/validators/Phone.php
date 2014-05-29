@@ -50,6 +50,7 @@ class validators_Phone extends xFrameworkPX_Model_Behavior {
      * 空チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
     private function _NotEmpty ($target) {
@@ -67,6 +68,8 @@ class validators_Phone extends xFrameworkPX_Model_Behavior {
      * 電話番号形式チェック
      *
      * @access public
+     * @param $target
+     * @param array $opt
      * @return boolean
      */
     private function _isPhone ($target, $opt=array('mobile' => true)) {
@@ -85,8 +88,8 @@ class validators_Phone extends xFrameworkPX_Model_Behavior {
      * 3つのフィールドで入力させた時用
      *
      * @access public
-     * @params $target チェック対象文字列(未使用)
-     * @params $opt
+     * @param string $target チェック対象文字列(未使用)
+     * @param $opt
      *  array(
      *      'target' => array(
      *          フィールド名1,
@@ -131,8 +134,8 @@ class validators_Phone extends xFrameworkPX_Model_Behavior {
     /**
      * 条件付き電話番号チェック
      *
-     * @params $target 入力データ
-     * @params $opt nameで指定したフィールドに
+     * @param string $target 入力データ
+     * @param array $opt nameで指定したフィールドに
      *                 valueで指定した値がある場合にチェックします
      * array(
      *     'name' => フィールド名

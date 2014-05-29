@@ -46,6 +46,7 @@ class validators_Same extends xFrameworkPX_Model_Behavior {
      * 空チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
     private function _NotEmpty ($target) {
@@ -63,8 +64,8 @@ class validators_Same extends xFrameworkPX_Model_Behavior {
      * 2フィールド同一チェック
      *
      * @access public
-     * @params $target チェック対象文字列
-     * @params $opt
+     * @param string $target チェック対象文字列
+     * @param $opt
      *  array(
      *      'target' => もう1つのフィールド名,
      *      'force' => trueで空でもチェック
@@ -109,8 +110,8 @@ class validators_Same extends xFrameworkPX_Model_Behavior {
     /**
      * 条件付き一致チェック
      *
-     * @params $target 入力データ
-     * @params $opt nameで指定したフィールドに
+     * @param string $target 入力データ
+     * @param array $opt nameで指定したフィールドに
      *                 valueで指定した値がある場合にチェックします
      * array(
      *     'name' => フィールド名

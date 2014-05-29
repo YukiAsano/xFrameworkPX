@@ -84,8 +84,8 @@ class validators_Length extends xFrameworkPX_Model_Behavior {
      * 特定文字付き文字数チェックメソッド
      * カンマやピリオドが混じった数値の文字数チェックに使用
      *
-     * @params $target ターゲット値（使用しない）
-     * @params $opt 
+     * @param $target ターゲット値（使用しない）
+     * @param $opt 
      *  array(
      *      'remove' => array(
      *          ',', '.' // 取り除く文字列
@@ -123,8 +123,8 @@ class validators_Length extends xFrameworkPX_Model_Behavior {
      * 複数用文字数チェック
      *
      * @access public
-     * @params $target チェック対象文字列
-     * @params $opt オプション
+     * @param $target チェック対象文字列
+     * @param $opt オプション
      * @return boolean
      */
     public function bindValidateTextLengthMulti ($targets, $opt = array()) {
@@ -154,8 +154,8 @@ class validators_Length extends xFrameworkPX_Model_Behavior {
     /**
      * 条件付き文字列長チェック
      *
-     * @params $target 入力データ
-     * @params $opt nameで指定したフィールドに
+     * @param $target 入力データ
+     * @param $opt nameで指定したフィールドに
      *                 valueで指定した値がある場合にチェックします
      * array(
      *     'name' => フィールド名
@@ -264,8 +264,8 @@ class validators_Length extends xFrameworkPX_Model_Behavior {
     /**
      * 条件付きバイト長チェック
      *
-     * @params $target 入力データ
-     * @params $opt nameで指定したフィールドに
+     * @param $target 入力データ
+     * @param $opt nameで指定したフィールドに
      *              valueで指定した値がある場合にチェックします
      * array(
      *     'name' => フィールド名

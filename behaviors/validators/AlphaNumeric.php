@@ -51,6 +51,7 @@ class validators_AlphaNumeric extends xFrameworkPX_Model_Behavior {
      * 空チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
     private function _NotEmpty ($target) {
@@ -68,6 +69,7 @@ class validators_AlphaNumeric extends xFrameworkPX_Model_Behavior {
      * 英数チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
     private function _isAlphaNumeric ($target) {
@@ -85,7 +87,8 @@ class validators_AlphaNumeric extends xFrameworkPX_Model_Behavior {
      * 文字付き半角英数チェックメソッド
      * カンマやピリオドが混じった数値のチェックに使用
      *
-     * @params $target ターゲット値（使用しない）
+     * @param string $target ターゲット値（使用しない）
+     * @param array $opt
      *  array(
      *      ',', '.' // 取り除く文字列
      *  )

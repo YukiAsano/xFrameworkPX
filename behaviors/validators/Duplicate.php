@@ -46,6 +46,7 @@ class validators_Duplicate extends xFrameworkPX_Model_Behavior {
      * 空チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
     private function _NotEmpty ($target) {
@@ -63,14 +64,15 @@ class validators_Duplicate extends xFrameworkPX_Model_Behavior {
      * データ重複チェック
      *
      * @access public
-     * @params $target チェック文字列
-     * @params $opt
+     * @param string $target チェック文字列
+     * @param array $opt
      * array(
      *     'target' => フィールド名, // 検索対象DBカラム名
      *     'where'  => WHERE句,      // 追加WHERE句（ステータスを見るとか。ex."AND del = 1 AND status <> :status"）
      *     'bind'   => array()       // 追加WHERE句に反映させるbindパラメータ。キー名にパラメータ名、値にフィールド名。
      *                               // array(':status' => 'status_field')）
      * )
+     * @throws xFrameworkPX_Exception
      * @return boolean 重複あり:false、重複なし:false
      */
     public function bindValidateDuplicate($target, $opt)

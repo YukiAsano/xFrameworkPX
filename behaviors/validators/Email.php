@@ -50,6 +50,7 @@ class validators_Email extends xFrameworkPX_Model_Behavior {
      * 空チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
     private function _NotEmpty ($target) {
@@ -67,6 +68,7 @@ class validators_Email extends xFrameworkPX_Model_Behavior {
      * Email形式チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
     private function _isEmail ($target) {
@@ -84,7 +86,9 @@ class validators_Email extends xFrameworkPX_Model_Behavior {
      * 複数用メールアドレスチェック
      *
      * @access public
-     * @params $target チェック対象文字列
+     * @param $targets
+     * @param array $opt
+     * @internal param \チェック対象文字列 $target
      * @return boolean
      */
     public function bindValidateEmailMulti ($targets, $opt = array()) {
@@ -114,13 +118,14 @@ class validators_Email extends xFrameworkPX_Model_Behavior {
     /**
      * 条件付きメールアドレスチェック
      *
-     * @params $target 入力データ
-     * @params $opt nameで指定したフィールドに
+     * @param string $target 入力データ
+     * @param array $opt nameで指定したフィールドに
      *                 valueで指定した値がある場合にチェックします
      * array(
      *     'name' => フィールド名
      *     'targetValue' => フィールドの値
      * )
+     * @param bool $bCond
      * @return boolean
      */
     public function bindValidateEmailCond($target, $opt = array(), $bCond = true)

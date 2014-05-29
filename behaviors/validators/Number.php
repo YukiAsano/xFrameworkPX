@@ -51,6 +51,7 @@ class validators_Number extends xFrameworkPX_Model_Behavior {
      * 空チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
     private function _NotEmpty ($target) {
@@ -68,6 +69,7 @@ class validators_Number extends xFrameworkPX_Model_Behavior {
      * 数値チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
     private function _isNumber ($target) {
@@ -85,8 +87,9 @@ class validators_Number extends xFrameworkPX_Model_Behavior {
      * 範囲チェック（最大値最小値を含みます）
      *
      * @access public
-     * @param $target 対象フィールド値
-     * @params $opt オプション（array('max' => '最大値', 'min' => '最小値')）
+     * @param string $target 対象フィールド値
+     * @param array $opt オプション（array('max' => '最大値', 'min' => '最小値')）
+     * @throws xFrameworkPX_Exception
      * @return boolean true:正常値,false:異常値
      */
     public function bindValidateNumberRange ($target, $opt = array('max' => 1, 'min' => 0)) {
@@ -126,10 +129,11 @@ class validators_Number extends xFrameworkPX_Model_Behavior {
      * 文字付き数値チェックメソッド
      * カンマやピリオドが混じった数値のチェックに使用
      *
-     * @params $target ターゲット値（使用しない）
+     * @param string $target ターゲット値（使用しない）
      *  array(
      *      ',', '.' // 取り除く文字列
      *  )
+     * @param array $opt
      * @return boolean
      */
     public function bindValidateNumberWithStr($target, $opt = array(','))
@@ -158,8 +162,8 @@ class validators_Number extends xFrameworkPX_Model_Behavior {
     /**
      * 数値FromToチェックメソッド
      *
-     * @params $target ターゲット値（使用しない）
-     * @params $opt オプション（array('from' => '開始値', 'to' => '終了値')）
+     * @param string $target ターゲット値（使用しない）
+     * @param array $opt オプション（array('from' => '開始値', 'to' => '終了値')）
      * @return boolean
      */
     public function bindValidateNumberFromTo ($target, $opt = array('from' => 'from', 'to' => 'to'))

@@ -46,6 +46,7 @@ class validators_Zip extends xFrameworkPX_Model_Behavior {
      * 空チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
     private function _NotEmpty ($target) {
@@ -62,8 +63,9 @@ class validators_Zip extends xFrameworkPX_Model_Behavior {
     /**
      * 半角英数（デフォルトはハイフン許可）チェック
      *
-     * @params $datas 入力データ配列
-     * @params $opt removeに正規表現で除外するものを指定します
+     * @param string $target
+     * @param array|\removeに正規表現で除外するものを指定します $opt removeに正規表現で除外するものを指定します
+     * @internal param \入力データ配列 $datas
      * @return boolean
      */
     public function bindValidateZipSingle($target, $opt = array('remove' => '/-/'))
@@ -92,8 +94,8 @@ class validators_Zip extends xFrameworkPX_Model_Behavior {
      * 郵便番号チェック
      *
      * @access public
-     * @params $target チェック対象文字列(未使用)
-     * @params $opt オプション（array('first' => '郵便番号3桁フィールド名', 'second' => '郵便番号4桁フィールド名')）
+     * @param $target チェック対象文字列(未使用)
+     * @param $opt オプション（array('first' => '郵便番号3桁フィールド名', 'second' => '郵便番号4桁フィールド名')）
      * @return boolean
      */
     public function bindValidateZip ($target, $opt) {
