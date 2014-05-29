@@ -50,9 +50,10 @@ class validators_Length extends xFrameworkPX_Model_Behavior {
      * 空チェック
      *
      * @access public
+     * @param $target
      * @return boolean
      */
-    private function _NotEmpty ($target) {
+    private function _NotEmpty($target) {
 
         //フレームワーク上の入力チェックを実行
         $empty = new xFrameworkPX_Validation_NotEmpty();
@@ -67,9 +68,11 @@ class validators_Length extends xFrameworkPX_Model_Behavior {
      * 文字列長チェック
      *
      * @access public
+     * @param $target
+     * @param $opt
      * @return boolean
      */
-    private function _TextLength ($target, $opt) {
+    private function _TextLength($target, $opt) {
 
         //フレームワーク上の入力チェックを実行
         $phone = new xFrameworkPX_Validation_TextLength();
@@ -123,11 +126,11 @@ class validators_Length extends xFrameworkPX_Model_Behavior {
      * 複数用文字数チェック
      *
      * @access public
-     * @param $target チェック対象文字列
-     * @param $opt オプション
+     * @param array $targets チェック対象文字列配列
+     * @param array $opt オプション
      * @return boolean
      */
-    public function bindValidateTextLengthMulti ($targets, $opt = array()) {
+    public function bindValidateTextLengthMulti($targets, $opt = array()) {
 
         if (!is_array($targets)) {
 
@@ -154,8 +157,8 @@ class validators_Length extends xFrameworkPX_Model_Behavior {
     /**
      * 条件付き文字列長チェック
      *
-     * @param $target 入力データ
-     * @param $opt nameで指定したフィールドに
+     * @param string $target 入力データ
+     * @param array $opt nameで指定したフィールドに
      *                 valueで指定した値がある場合にチェックします
      * array(
      *     'name' => フィールド名
@@ -218,9 +221,11 @@ class validators_Length extends xFrameworkPX_Model_Behavior {
      * バイト長チェック
      *
      * @access public
+     * @param $target
+     * @param $opt
      * @return boolean
      */
-    public function bindValidateByteLength ($target, $opt) {
+    public function bindValidateByteLength($target, $opt) {
 
         // バイト単位での長さチェック
 
@@ -264,8 +269,8 @@ class validators_Length extends xFrameworkPX_Model_Behavior {
     /**
      * 条件付きバイト長チェック
      *
-     * @param $target 入力データ
-     * @param $opt nameで指定したフィールドに
+     * @param string $target 入力データ
+     * @param array $opt nameで指定したフィールドに
      *              valueで指定した値がある場合にチェックします
      * array(
      *     'name' => フィールド名
@@ -273,7 +278,7 @@ class validators_Length extends xFrameworkPX_Model_Behavior {
      * )
      * @return boolean
      */
-    public function bindValidateByteLengthCond ($target, $opt = array()) {
+    public function bindValidateByteLengthCond($target, $opt = array()) {
 
         // 【お約束】ローカル変数初期化
         $datas = null;

@@ -53,7 +53,7 @@ class validators_Date extends xFrameworkPX_Model_Behavior {
      * @param $target
      * @return boolean
      */
-    private function _NotEmpty ($target) {
+    private function _NotEmpty($target) {
 
         //フレームワーク上の入力チェックを実行
         $empty = new xFrameworkPX_Validation_NotEmpty();
@@ -70,7 +70,7 @@ class validators_Date extends xFrameworkPX_Model_Behavior {
      * @param $target
      * @return boolean
      */
-    private function _Date ($target) {
+    private function _Date($target) {
 
         //フレームワーク上の入力チェックを実行
         $date = new xFrameworkPX_Validation_Date();
@@ -88,7 +88,7 @@ class validators_Date extends xFrameworkPX_Model_Behavior {
      * @param array $targets チェック対象文字列
      * @return boolean
      */
-    public function bindValidateDateMulti ($targets) {
+    public function bindValidateDateMulti($targets) {
 
         if (!is_array($targets)) {
 
@@ -121,7 +121,7 @@ class validators_Date extends xFrameworkPX_Model_Behavior {
      * @throws xFrameworkPX_Exception
      * @return boolean true:正常値,false:異常値
      */
-    public function bindValidateDateRange ($target, $opt)
+    public function bindValidateDateRange($target, $opt)
     {
 
         // 【お約束】ローカル変数初期化
@@ -163,7 +163,7 @@ class validators_Date extends xFrameworkPX_Model_Behavior {
      * @param array $opt オプション（array('from' => '開始日時', 'to' => '終了日時')）
      * @return boolean
      */
-    public function bindValidateDateFromTo ($target, $opt = array('from' => 'from', 'to' => 'to'))
+    public function bindValidateDateFromTo($target, $opt = array('from' => 'from', 'to' => 'to'))
     {
 
         // 【お約束】ローカル変数初期化

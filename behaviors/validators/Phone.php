@@ -53,7 +53,7 @@ class validators_Phone extends xFrameworkPX_Model_Behavior {
      * @param $target
      * @return boolean
      */
-    private function _NotEmpty ($target) {
+    private function _NotEmpty($target) {
 
         //フレームワーク上の入力チェックを実行
         $empty = new xFrameworkPX_Validation_NotEmpty();
@@ -72,7 +72,7 @@ class validators_Phone extends xFrameworkPX_Model_Behavior {
      * @param array $opt
      * @return boolean
      */
-    private function _isPhone ($target, $opt=array('mobile' => true)) {
+    private function _isPhone($target, $opt=array('mobile' => true)) {
 
         //フレームワーク上の入力チェックを実行
         $phone = new xFrameworkPX_Validation_Phone();
@@ -99,7 +99,7 @@ class validators_Phone extends xFrameworkPX_Model_Behavior {
      *  )
      * @return boolean
      */
-    public function bindValidatePhone3Field ($target, $opt) {
+    public function bindValidatePhone3Field($target, $opt) {
 
         // 【お約束】ローカル変数初期化
         // 引数の$targetは使わない

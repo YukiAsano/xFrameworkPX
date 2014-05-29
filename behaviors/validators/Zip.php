@@ -49,7 +49,7 @@ class validators_Zip extends xFrameworkPX_Model_Behavior {
      * @param $target
      * @return boolean
      */
-    private function _NotEmpty ($target) {
+    private function _NotEmpty($target) {
 
         //フレームワーク上の入力チェックを実行
         $empty = new xFrameworkPX_Validation_NotEmpty();
@@ -64,8 +64,7 @@ class validators_Zip extends xFrameworkPX_Model_Behavior {
      * 半角英数（デフォルトはハイフン許可）チェック
      *
      * @param string $target
-     * @param array|\removeに正規表現で除外するものを指定します $opt removeに正規表現で除外するものを指定します
-     * @internal param \入力データ配列 $datas
+     * @param array $opt removeに正規表現で除外するものを指定します
      * @return boolean
      */
     public function bindValidateZipSingle($target, $opt = array('remove' => '/-/'))
@@ -83,7 +82,9 @@ class validators_Zip extends xFrameworkPX_Model_Behavior {
 
         }
 
-        return preg_match('/^[0-9]{7}$/', $target);
+        $ret = preg_match('/^[0-9]{7}$/', $target);
+
+        return $ret === 1 ? true : false;
 
     }
 
@@ -98,7 +99,7 @@ class validators_Zip extends xFrameworkPX_Model_Behavior {
      * @param $opt オプション（array('first' => '郵便番号3桁フィールド名', 'second' => '郵便番号4桁フィールド名')）
      * @return boolean
      */
-    public function bindValidateZip ($target, $opt) {
+    public function bindValidateZip($target, $opt) {
 
         // 【お約束】ローカル変数初期化
         $datas = null;
