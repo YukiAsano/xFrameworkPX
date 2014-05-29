@@ -34,6 +34,13 @@ class xFrameworkPX_Util_Format
     // {{{ props
 
     /**
+     * このクラスのインスタンス
+     *
+     * @access private
+     */
+    private static $_instance;
+
+    /**
      * 括弧の未完回数
      *
      * @var int
@@ -76,6 +83,26 @@ class xFrameworkPX_Util_Format
     private $_tab = '';
 
     // }}}
+    // {{{ getInstance
+
+    /**
+     * インスタンス取得
+     *
+     * @access public
+     * @param none
+     * @return object インスタンス
+     */
+    public static function getInstance()
+    {
+
+        if (!self::$_instance) {
+            self::$_instance = new self;
+        }
+
+        return self::$_instance;
+    }
+
+    // }}}
     // {{{ fromatSQL
 
     /**
@@ -86,7 +113,7 @@ class xFrameworkPX_Util_Format
      */
     public static function formatSQL($targetSql, $html=false, $color=false)
     {
-        $format = new xFrameworkPX_Util_Format();
+        $format = xFrameworkPX_Util_Format::getInstance();
         if($html) {
 
             if($color) {

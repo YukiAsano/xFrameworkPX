@@ -153,6 +153,26 @@ function file_copy($dest, $src)
 }
 
 // }}}
+// {{{ file_change_owner
+
+/**
+ * ファイル所有者変更関数
+ *
+ * ファイルの所有者を変更します。
+ *
+ * @param string $filename 所有者を変更するファイルへのパス。
+ * @param string $user 変更する所有者。
+ * @see http://php.net/manual/ja/function.chown.php
+ * @see http://php.net/manual/ja/function.fileowner.php
+ * @return bool
+ */
+function file_change_owner($filename, $user = null)
+{
+
+    return @chown($filename, $user);
+
+}
+// }}}
 // {{{ get_filename
 
 /**
@@ -840,6 +860,111 @@ function move_file(
 
     return false;
 
+}
+
+// }}}
+// {{{ getFileType
+
+/**
+ * ファイルの拡張子を取得します
+ *
+ * @param string $path ファイル パス
+ * @return string 拡張子
+ */
+function getFileType($path) {
+    $path = explode('.', $path);
+    if (count($path) == 1) {
+        return '';
+    }
+    else {
+        return '.'.end($path);
+    }
+}
+
+// }}}
+// {{{ setFileType
+
+/**
+ * ファイルの拡張子を設定します
+ *
+ * @param string $path ファイル パス
+ * @param string $type ファイル拡張子
+ * @return string ファイル パス
+ */
+function setFileType($path, $type) {
+    $path = explode('.', $path);
+    if (count($path) != 1) {
+        array_pop($path);
+    }
+    $path = implode('.', $path);
+    if ($type != '') {
+        $path .= $type;
+    }
+    return $path;
+}
+
+// }}}
+// {{{ getFileList
+
+/**
+ * ファイルの一覧を取得します
+ *
+ * @param string $dir ディレクトリ
+ * @param array $options オプション
+ * @return mixed array: 一覧、string: エラー メッセージ
+ */
+function getFileList($dir, $options = array()) {
+    $options += array(
+        'depth' => 0,     //1以上: 深さ、0: 死ぬまで
+        'clean' => false, //true: 変なディレクトリはないはず
+        'base'  => false, //true: ファイル名のみ
+    );
+    $result = array();
+    $handle = @opendir($dir);
+    if ($handle === false) {
+        if (isset($php_errormsg)) {
+            return $php_errormsg;
+        }
+        else {
+            return 'オープンできませんでした。';
+        }
+    }
+    while (($file = @readdir($handle)) != false) {
+        if (($file == '')
+        ||  ($file == '.')
+        ||  ($file == '..')) {
+            continue;
+        }
+        $path = $dir.DS.$file;
+        if (is_dir($path)) {
+            if ($options['depth'] != 1) {
+                $items = getFileList($path, array(
+                    'depth' => ($options['depth'] - 1),
+                    'clean' => $options['clean'],
+                    'base'  => $options['base'],
+                ));
+                if (is_array($items)) {
+                    $result = array_merge($result, $items);
+                }
+                else {
+                    if ($options['clean']) {
+                        $result = $items;
+                        break;
+                    }
+                }
+            }
+        }
+        else {
+            if ($options['base']) {
+                $result[] = $file;
+            }
+            else {
+                $result[] = $path;
+            }
+        }
+    }
+    closedir($handle);
+    return $result;
 }
 
 // }}}

@@ -1278,6 +1278,10 @@ class xFrameworkPX_Dispatcher extends xFrameworkPX_Object
     private function _catchException($e) {
         $message = $e->getMessage();
         $query = xFrameworkPX_Db::getInstance()->getQuery();
+
+        $query = xFrameworkPX_Util_Format::formatSQL($query);
+        $query = str_replace("\r", "\n", $query);
+
         if ($query != '') {
             $message .= "\n".$query;
         }

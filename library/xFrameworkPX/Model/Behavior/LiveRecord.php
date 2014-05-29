@@ -3204,8 +3204,7 @@ extends xFrameworkPX_Model_Behavior
     }
 
     // }}}
-
-    // {{{
+    // {{{ bindSetQuery
 
     public function bindSetQuery ($query, $binds = null)
     {

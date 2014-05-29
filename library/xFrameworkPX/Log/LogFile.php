@@ -64,7 +64,6 @@ class xFrameworkPX_Log_LogFile extends xFrameworkPX_Log_LogBase
     }
 
     // }}}
-
     // {{{ _makeFileName
 
     /**
@@ -99,7 +98,6 @@ class xFrameworkPX_Log_LogFile extends xFrameworkPX_Log_LogBase
     }
 
     // }}}
-
     // {{{ _makeOutputDir
 
     /**
@@ -135,7 +133,6 @@ class xFrameworkPX_Log_LogFile extends xFrameworkPX_Log_LogBase
     }
 
     // }}}
-
     // {{{ _logRotate
 
     /**
@@ -189,7 +186,6 @@ class xFrameworkPX_Log_LogFile extends xFrameworkPX_Log_LogBase
     }
 
     // }}}
-
     // {{{ _outPutLog
 
     /**
@@ -232,16 +228,13 @@ class xFrameworkPX_Log_LogFile extends xFrameworkPX_Log_LogBase
     }
 
     // }}}
-
-    // {{{ _outPutLog
+    // {{{ _fileChangeOwner
 
     /**
-     * ログファイルへの出力メソッド
+     * ファイル所有者変更メソッド
      *
-     * @param int $level ログレベル
-     * @param array $location ロケーション情報
-     * @param string $message 出力文字列
-     * @param string $outputFileName 出力ファイル
+     * @param string $outputFileName ファイル名
+     * @param string $user 変更したい所有者名
      */
     private function _fileChangeOwner($outputFileName, $user = self::_apacheUser) {
         return file_change_owner($outputFileName, $user);

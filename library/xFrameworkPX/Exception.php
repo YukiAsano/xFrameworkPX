@@ -667,6 +667,7 @@ EOC;
     }
 
     // }}}
+    // }}}
 
     public function getPrevClass () {
 
