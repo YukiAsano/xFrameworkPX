@@ -43,10 +43,10 @@ class misc extends xFrameworkPX_Model_Behavior {
     // {{{ bindConvertArray
 
     /**
-     * 配列変換メソッド(再起)
+     * 配列変換メソッド(再帰)
      *
      * @access public
-     * @params $data xFrameworkPX_Util_MixedCollectionオブジェクト
+     * @param xFrameworkPX_Util_MixedCollection $mix xFrameworkPX_Util_MixedCollectionオブジェクト
      * @return array
      */
     public function bindConvertArray($mix)
@@ -78,9 +78,9 @@ class misc extends xFrameworkPX_Model_Behavior {
      * 送信パラメータ取得メソッド
      *
      * @access public
-     * @param $datas パラメータ配列
-     * @param $filter 除去パラメータ名配列
-     * @param $enc urlencodeフラグ
+     * @param array $datas パラメータ配列
+     * @param array $filter 除去パラメータ名配列
+     * @param boolean $enc urlencodeフラグ
      * @return string クエリ文字列
      */
     public function bindCreateQuery(
@@ -112,13 +112,13 @@ class misc extends xFrameworkPX_Model_Behavior {
     // {{{ _createQuery
 
     /**
-     * 送信パラメータ取得メソッド(再起)
+     * 送信パラメータ取得メソッド(再帰)
      *
-     * @param $datas パラメータ配列
-     * @param $filter 除去パラメータ名配列
+     * @param array $datas パラメータ配列
+     * @param array $filter 除去パラメータ名配列
      * @access private
-     * @param $name  パラメータが配列構成時のkey
-     * @param $names パラメータが配列構成時のkey配列
+     * @param string $name  パラメータが配列構成時のkey
+     * @param array $names パラメータが配列構成時のkey配列
      * @return string クエリ文字列
      */
     public function _createQuery($datas, $filter = array(), $name = '', $names = array())
@@ -174,11 +174,11 @@ class misc extends xFrameworkPX_Model_Behavior {
      * ページャー情報取得メソッド
      *
      * @access public
-     * @param $page ページ情報
-     * @param $limit 1ページ当たりの表示件数
-     * @param $count 総件数
-     * @param $number 表示ページ数
-     * @param $cond 検索条件
+     * @param int $page ページ情報
+     * @param int $limit 1ページ当たりの表示件数
+     * @param int $count 総件数
+     * @param int $number 表示ページ数
+     * @param string $cond 検索条件
      * @return array ページャー情報配列
      */
     public function bindGetPager($page, $limit, $count, $number = 5, $cond = '')
@@ -259,9 +259,9 @@ class misc extends xFrameworkPX_Model_Behavior {
      * ディレクトリクリーンメソッド
      * ディレクトリ内のファイルを削除します
      *
-     * @param $dir 対象ディレクトリ
-     * @param $time 対象経過時間
-     * @param $timeType 対象経過時間のタイプ(H, i, s)
+     * @param string $dir 対象ディレクトリ
+     * @param string $time 対象経過時間
+     * @param string $timeType 対象経過時間のタイプ(H, i, s)
      * @return void
      */
     public function bindClean($dir, $time, $timeType = 'H')
@@ -315,9 +315,9 @@ class misc extends xFrameworkPX_Model_Behavior {
      *
      * 指定した時間以前に生成されているかをチェックします。
      *
-     * @param $filename ファイル名
-     * @param $time 対象時間
-     * @param $timeType 対象時間タイプ（H,i,s）
+     * @param string $filename ファイル名
+     * @param string $time 対象時間
+     * @param string $timeType 対象時間タイプ（H,i,s）
      * @return true 対象時間以前に生成されたファイル false
      */
     public function _checkDate($filename, $time, $timeType = 'H')
@@ -345,8 +345,9 @@ class misc extends xFrameworkPX_Model_Behavior {
     /**
      * ディレクトリコピーメソッド
      *
-     * @param $baseDir コピー元ディレクトリ
-     * @param $copyDir コピー先ディレクトリ
+     * @param string $baseDir コピー元ディレクトリ
+     * @param string $copyDir コピー先ディレクトリ
+     * @return bool
      */
     public function bindCopyDirectory($baseDir, $copyDir)
     {
@@ -393,7 +394,8 @@ class misc extends xFrameworkPX_Model_Behavior {
     /**
      * 設置ディレクトリ取得メソッド
      *
-     * @param $type admin, manager, etc
+     * @param $type
+     * @param bool $ssl
      * @return string
      */
     public function bindGetContentsUrl($type, $ssl = false)
@@ -401,13 +403,12 @@ class misc extends xFrameworkPX_Model_Behavior {
 
         $ret = '';
 
-        //$info = xFrameworkPX_Environment::getInstance()->get($type);
-        $info = xFrameworkPX_Environment::getInstance()->get('categorysetting', $type, 'uri');
+        $info = xFrameworkPX_Environment::getInstance()->get('categorysetting', $type);
 
         $protocol = ($ssl)? 'https://' : 'http://';
 
         if (isset($info['domain']) && isset($info['userdir']) && isset($info['dir'])) {
-            $ret = $protocol.implode('', $info);
+            $ret = $protocol.str_replace('//', '/', implode('/', $info));
         }
 
         return $ret;
@@ -420,7 +421,6 @@ class misc extends xFrameworkPX_Model_Behavior {
     /**
      * 現在ページの情報取得メソッド
      *
-     * @param $type admin, manater, etc
      * @return string
      */
     public function bindGetCurrentPageInfo()
@@ -480,7 +480,8 @@ class misc extends xFrameworkPX_Model_Behavior {
     /**
      * キーワード正規化メソッド
      *
-     * @param $target 対象キーワード
+     * @param string $target 対象キーワード
+     * @param string $enc エンコード
      * @return string
      */
     public function bindNormalizeKeyword ($target, $enc = 'UTF-8')
@@ -506,8 +507,6 @@ class misc extends xFrameworkPX_Model_Behavior {
     /**
      * キーワード正規化メソッド
      *
-     * @param $target 対象キーワード
-     * @return string
      */
     private function _load ()
     {
@@ -559,7 +558,7 @@ class misc extends xFrameworkPX_Model_Behavior {
     /**
      * 日付フォーマット簡易チェックメソッド
      *
-     * @params $date 日付
+     * @param $date 日付
      * @return boolean 日付ならtrue
      */
     public function bindDateChk($date)
