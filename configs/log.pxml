@@ -4,9 +4,10 @@
         <loglevel>TRACE</loglevel>
 
         <channel>
-            <default>false</default>
+            <default>true</default>
             <firePHP>false</firePHP>
             <mail>false</mail>
+            <batch>true</batch>
         </channel>
 
         <loggers>
@@ -24,6 +25,21 @@
                     </params>
                 </logger>
             </default>
+
+            <batch>
+                <logger>
+                    <name>xFrameworkPX_Log_LogFile</name>
+                    <path>/Log/LogFile.php</path>
+                    <params>
+                        <filename>BatchLog.log</filename>
+                        <quota>
+                            <date>yes</date>
+                            <size></size>
+                            <limit></limit>
+                        </quota>
+                    </params>
+                </logger>
+            </batch>
 
             <firePHP>
                 <logger>
