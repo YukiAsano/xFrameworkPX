@@ -46,7 +46,7 @@ class util_password extends xFrameworkPX_Model_Behavior {
      * パスワード生成メソッド
      *
      * @access public
-     * @params $length パスワードの長さ
+     * @param int $length パスワードの長さ
      * @return mixed パスワード文字列
      */
     public function bindGetPassword($length = 8) {
@@ -62,8 +62,8 @@ class util_password extends xFrameworkPX_Model_Behavior {
      * 暗号化メソッド(要php-mcrypt)
      *
      * @access public
-     * @params $text 暗号対象テキスト
-     * @return void
+     * @param string $text 暗号対象テキスト
+     * @return string|void
      */
     public function bindEncrypt($text) {
 
@@ -82,7 +82,7 @@ class util_password extends xFrameworkPX_Model_Behavior {
      * 復号化メソッド(要php-mcrypt)
      *
      * @access public
-     * @params $text 復号対象テキスト
+     * @param string $text 復号対象テキスト
      * @return string
      */
     public function bindDecrypt($text) {
@@ -103,9 +103,10 @@ class util_password extends xFrameworkPX_Model_Behavior {
      * sha1とmd5の組み合わせのパスワード使用時
      *
      * @access public
+     * @param string $plain
      * @return string 暗号化パスワード
      */
-    public function bindGetCryptPass ($plain) {
+    public function bindGetCryptPass($plain) {
 
         return sha1(md5($plain));
 

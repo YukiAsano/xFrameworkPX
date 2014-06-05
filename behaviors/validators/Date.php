@@ -211,6 +211,58 @@ class validators_Date extends xFrameworkPX_Model_Behavior {
     }
 
     // }}}
+    // {{{ bindValidateMultipleDate
+
+    /**
+     * 年月日フィールド分割日付チェックメソッド
+     *
+     * @param string $target ターゲット値（使用しない）
+     * @param array $opt オプション（array('year' => '年フィールド', 'month' => '月フィールド', 'day' => '日フィールド')）
+     * @return boolean
+     */
+    public function bindValidateMultipleDate($target, $opt = array('year' => 'year', 'month' => 'month', 'day' => 'day'))
+    {
+
+        // 【お約束】ローカル変数初期化
+        $datas = null;
+        $from = null;
+        $to = null;
+
+        // フィールド全データ取得
+        $datas = $this->module->getTargetDatas();
+
+        // チェックフィールド設定がなければ終了
+        if (!isset($opt['year']) || !isset($opt['month']) || !isset($opt['day'])) {
+            return true;
+        }
+
+        // チェックできないので終了
+        if (!isset($datas[$opt['year']]) || !isset($datas[$opt['month']]) || !isset($datas[$opt['day']])) {
+            return true;
+        }
+
+        // 【お約束】空はチェックしない
+        if (!$this->_NotEmpty($datas[$opt['year']]) ||
+            !$this->_NotEmpty($datas[$opt['month']]) ||
+            !$this->_NotEmpty($datas[$opt['day']])) {
+            return true;
+        }
+
+        $year = $datas[$opt['year']];
+        $month = $datas[$opt['month']];
+        $day = $datas[$opt['day']];
+        $date = $year . '/' . $month . '/'  . $day;
+
+
+        if (!$this->_Date($date)) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+    // }}}
 
 }
 

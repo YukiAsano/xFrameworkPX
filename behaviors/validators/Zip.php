@@ -75,6 +75,11 @@ class validators_Zip extends xFrameworkPX_Model_Behavior {
             return true;
         }
 
+        // -込みの状態で8文字以上はNG
+        if (8 < strlen($target)) {
+            return false;
+        }
+
         if (isset($opt['remove'])) {
 
             // 指定した記号を取り除く
