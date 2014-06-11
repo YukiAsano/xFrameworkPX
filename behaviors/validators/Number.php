@@ -129,7 +129,7 @@ class validators_Number extends xFrameworkPX_Model_Behavior {
      * 文字付き数値チェックメソッド
      * カンマやピリオドが混じった数値のチェックに使用
      *
-     * @param string $target ターゲット値（使用しない）
+     * @param string $target ターゲット値
      *  array(
      *      ',', '.' // 取り除く文字列
      *  )

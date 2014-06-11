@@ -49,7 +49,7 @@ class validators_NotEmpty extends xFrameworkPX_Model_Behavior {
      * @param $target
      * @return boolean
      */
-    private function _NotEmpty ($target) {
+    private function _NotEmpty($target) {
 
         //フレームワーク上の入力チェックを実行
         $empty = new xFrameworkPX_Validation_NotEmpty();
@@ -68,7 +68,7 @@ class validators_NotEmpty extends xFrameworkPX_Model_Behavior {
      * @param array $targets チェック対象文字列配列
      * @return boolean
      */
-    public function bindValidateNotEmptyMulti ($targets) {
+    public function bindValidateNotEmptyMulti($targets) {
 
         if (!is_array($targets)) {
 
@@ -100,7 +100,7 @@ class validators_NotEmpty extends xFrameworkPX_Model_Behavior {
      * @param $opt オプション（array('target' => array('フィールド名'...))）
      * @return boolean
      */
-    public function bindValidateNotEmptyMultiField ($target, $opt) {
+    public function bindValidateNotEmptyMultiField($target, $opt) {
 
         $datas = $this->module->getTargetDatas();
 
@@ -130,10 +130,38 @@ class validators_NotEmpty extends xFrameworkPX_Model_Behavior {
      * @param $target 対象フィールド値
      * @return boolean true:正常値,false:異常値
      */
-    public function bindValidateNotEmptyWithSpace ($target) {
+    public function bindValidateNotEmptyWithSpace($target) {
 
         // 空白文字を取り除いたデータが空の場合エラー
         return $this->_NotEmpty(preg_replace('/^\r\n|\r|\n|\s|　+/i', '', $target));
+
+    }
+
+    // }}}
+    // {{{ bindValidateNotEmptyWithStr
+
+    /**
+     * 区切り文字つき空チェック（区切り文字だけの場合もエラー）
+     *
+     * @access public
+     * @param $target 対象フィールド値
+     * @param $opt
+     *  array(
+     *      ',', '.' // 取り除く文字列
+     *  )
+     * @return boolean true:正常値,false:異常値
+     */
+    public function bindValidateNotEmptyWithStr($target, $opt=array(',')) {
+
+        if (is_array($opt)) {
+            // 文字を取り除く
+            foreach ($opt as $str) {
+                $target = str_replace($str, '', $target);
+            }
+        }
+
+        // 区切り文字を取り除いたデータが空の場合エラー
+        return $this->_NotEmpty($target);
 
     }
 
@@ -159,37 +187,19 @@ class validators_NotEmpty extends xFrameworkPX_Model_Behavior {
         $datas = null;
         $chkData = null;
 
-        // 【お約束】空はチェックしない
-        if (!$this->_NotEmpty($target)) {
-            return true;
-        }
-
         // 全データ取得
         $datas = $this->module->getTargetDatas();
 
         if (
             !isset($datas[$opt['name']]) ||
-            $this->_NotEmpty($opt['name'])
+            !$this->_NotEmpty($opt['name'])
         ) {
             // ターゲットとなるものが空ならtrueを返す
             return true;
         }
 
-        if (is_object($chkData)) {
+        if ($opt['value'] == $datas[$opt['name']]) {
 
-            // オブジェクトなら変換
-            $chkData = $this->module->convertArray($datas[$opt['name']]);
-
-        } else if (is_string($chkData)) {
-
-            // 文字列なら配列化
-            $chkData = array(
-                $chkData
-            );
-
-        }
-
-        if (array_search($opt['value'], $chkData) !== false) {
             // 対象の値が設定した値なら、チェック実行
             return $this->_NotEmpty($target);
         }
@@ -209,7 +219,7 @@ class validators_NotEmpty extends xFrameworkPX_Model_Behavior {
      * @param array $targets チェック対象文字列配列
      * @return boolean
      */
-    public function bindValidateNotEmptyCondMulti ($targets) {
+    public function bindValidateNotEmptyCondMulti($targets) {
 
         if (!is_array($targets)) {
 

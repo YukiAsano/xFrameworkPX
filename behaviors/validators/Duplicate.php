@@ -49,7 +49,7 @@ class validators_Duplicate extends xFrameworkPX_Model_Behavior {
      * @param $target
      * @return boolean
      */
-    private function _NotEmpty ($target) {
+    private function _NotEmpty($target) {
 
         //フレームワーク上の入力チェックを実行
         $empty = new xFrameworkPX_Validation_NotEmpty();
@@ -73,7 +73,7 @@ class validators_Duplicate extends xFrameworkPX_Model_Behavior {
      *                               // array(':status' => 'status_field')）
      * )
      * @throws xFrameworkPX_Exception
-     * @return boolean 重複あり:false、重複なし:false
+     * @return boolean 重複あり:false、重複なし:true
      */
     public function bindValidateDuplicate($target, $opt)
     {
