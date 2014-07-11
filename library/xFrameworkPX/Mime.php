@@ -115,12 +115,16 @@ class xFrameworkPX_Mime extends xFrameworkPX_Object
             } else {
 
                 if ($base64{75} == '=') {
-                    $cache = $row;
+                    if ($eof) {
+                        $put = $base64 . "\r\n";
+                        $cache = '';
+                    } else {
+                        $cache = $row;
+                    }
                 } else {
                     $put = $base64 . "\r\n";
                     $cache = '';
                 }
-
             }
 
             if (!empty($put)) {
@@ -132,7 +136,6 @@ class xFrameworkPX_Mime extends xFrameworkPX_Object
                 $length += strlen($put);
                 fputs($memory, $put);
             }
-
         }
 
         fclose($fileHandle);
